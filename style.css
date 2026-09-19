@@ -1,0 +1,140 @@
+:root {
+  --marin: #14304A;
+  --marin-djup: #0E2236;
+  --vatten: #4A7A9B;
+  --vatten-ljus: #DCE7EE;
+  --grund: #F4F6F8;
+  --papper: #FFFFFF;
+  --text: #1B2430;
+  --text-dov: #58677A;
+  --linje: #CAD4DC;
+  --sand: #B8A98A;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--grund);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--vatten); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--marin); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--vatten); outline-offset: 3px; }
+
+.wrap { max-width: 1080px; margin-inline: auto; padding-inline: 24px; }
+
+/* Topp */
+.topp {
+  background: var(--papper);
+  border-bottom: 1px solid var(--linje);
+}
+.topp .wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding-block: 18px;
+  flex-wrap: wrap;
+}
+.marke { display: flex; align-items: center; gap: 12px; color: var(--marin); text-decoration: none; }
+.marke svg { width: 40px; height: 40px; flex: none; }
+.marke b { font-family: var(--serif); font-weight: 600; font-size: 19px; letter-spacing: 0.01em; }
+.marke small { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dov); }
+.nav { display: flex; gap: 22px; flex-wrap: wrap; }
+.nav a { font-size: 15px; color: var(--text); text-decoration: none; padding-block: 4px; border-bottom: 1px solid transparent; }
+.nav a:hover { border-bottom-color: var(--vatten); color: var(--marin); }
+
+/* Hero */
+.hero { background: var(--marin); color: #F2F5F8; }
+.hero .wrap { padding-block: 72px 64px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 48px; align-items: end; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sand); margin: 0 0 20px; }
+.hero h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(32px, 4.6vw, 52px); line-height: 1.12; margin: 0 0 24px; text-wrap: balance; }
+.hero p { font-size: 18px; line-height: 1.6; max-width: 34em; margin: 0; color: #D7E0E8; }
+.hero .kort { border-left: 2px solid var(--sand); padding-left: 20px; font-size: 15px; color: #C5D1DB; }
+.hero .kort dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sand); margin-top: 14px; }
+.hero .kort dt:first-child { margin-top: 0; }
+.hero .kort dd { margin: 2px 0 0; color: #F2F5F8; }
+
+/* Sektioner */
+section { padding-block: 72px; }
+section + section { border-top: 1px solid var(--linje); }
+.sekt-huvud { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; margin-bottom: 40px; align-items: start; }
+.sekt-huvud h2 { font-family: var(--serif); font-weight: 500; font-size: 30px; line-height: 1.2; margin: 0; text-wrap: balance; color: var(--marin); }
+.sekt-huvud p { margin: 0; color: var(--text-dov); max-width: 36em; }
+.sekt-huvud .eyebrow { color: var(--vatten); margin-bottom: 10px; }
+
+/* Tjänster */
+.tjanster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; border-top: 1px solid var(--linje); }
+.tjanst { padding-block: 26px; border-bottom: 1px solid var(--linje); }
+.tjanst h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 0 0 8px; color: var(--marin); }
+.tjanst p { margin: 0; color: var(--text-dov); font-size: 16px; }
+
+/* AI och utveckling */
+.ai-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.ai-text p { margin: 0 0 18px; max-width: 36em; }
+.ai-text ul { margin: 0 0 18px; padding-left: 0; list-style: none; }
+.ai-text li { padding: 10px 0 10px 18px; border-left: 2px solid var(--vatten-ljus); margin-bottom: 8px; color: var(--text); }
+.ai-text li b { color: var(--marin); }
+
+/* Projektblad, formad som ett ritningshuvud */
+.blad { background: var(--papper); border: 1px solid var(--marin); }
+.blad header { background: var(--marin); color: #F2F5F8; padding: 14px 20px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.blad header b { font-family: var(--serif); font-size: 22px; font-weight: 500; }
+.blad header span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sand); }
+.blad dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); }
+.blad dt, .blad dd { padding: 12px 20px; border-bottom: 1px solid var(--linje); margin: 0; }
+.blad dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dov); border-right: 1px solid var(--linje); padding-top: 15px; }
+.blad dd { font-size: 15px; }
+.blad dt:nth-last-of-type(1), .blad dd:last-child { border-bottom: 0; }
+.blad footer { padding: 12px 20px; border-top: 1px solid var(--marin); font-size: 14px; background: var(--vatten-ljus); }
+
+/* Om */
+.om-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; }
+.om-grid p { margin: 0 0 16px; max-width: 36em; }
+.om-grid h2 { font-family: var(--serif); font-weight: 500; font-size: 30px; margin: 0; color: var(--marin); }
+
+/* Kontakt */
+.kontakt { background: var(--papper); }
+.kontakt-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.kontakt-grid .eyebrow { color: var(--vatten); margin-bottom: 6px; }
+.kontakt-grid .v { font-size: 18px; margin: 0; }
+.kontakt-grid .v a { color: var(--marin); }
+.kontakt-grid .n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.kontakt-grid p.dov { margin: 6px 0 0; color: var(--text-dov); font-size: 15px; }
+
+/* Sidfot */
+.fot { background: var(--marin-djup); color: #B9C6D1; font-size: 14px; }
+.fot .wrap { padding-block: 28px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.fot a { color: #DCE4EB; }
+.fot .mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; }
+
+/* Undersidor */
+.doc { max-width: 720px; margin-inline: auto; padding-block: 56px 80px; }
+.doc h1 { font-family: var(--serif); font-weight: 500; font-size: 36px; line-height: 1.15; margin: 0 0 8px; color: var(--marin); text-wrap: balance; }
+.doc .meta { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dov); margin: 0 0 36px; }
+.doc h2 { font-family: var(--serif); font-weight: 600; font-size: 22px; margin: 40px 0 12px; color: var(--marin); }
+.doc p { margin: 0 0 16px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: 15px; margin: 8px 0 20px; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--linje); }
+.doc th { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dov); font-weight: 500; }
+.doc .tabell { overflow-x: auto; }
+
+@media (max-width: 800px) {
+  .hero .wrap { grid-template-columns: 1fr; padding-block: 48px; gap: 32px; }
+  .sekt-huvud, .ai-grid, .om-grid { grid-template-columns: 1fr; gap: 20px; }
+  .tjanster { grid-template-columns: 1fr; gap: 0; }
+  .kontakt-grid { grid-template-columns: 1fr; gap: 24px; }
+  section { padding-block: 52px; }
+  .blad dl { grid-template-columns: 1fr; }
+  .blad dt { border-right: 0; border-bottom: 0; padding-bottom: 0; }
+}
