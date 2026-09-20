@@ -98,6 +98,17 @@ section + section { border-top: 1px solid var(--linje); }
 .blad dt:nth-last-of-type(1), .blad dd:last-child { border-bottom: 0; }
 .blad footer { padding: 12px 20px; border-top: 1px solid var(--marin); font-size: 14px; background: var(--vatten-ljus); }
 
+/* Erfarenhet */
+.ref-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--linje); }
+.ref { padding: 26px 24px 26px 0; border-bottom: 1px solid var(--linje); }
+.ref + .ref { padding-left: 24px; border-left: 1px solid var(--linje); }
+.ref .typ { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--vatten); margin: 0 0 10px; }
+.ref h3 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0 0 8px; color: var(--marin); }
+.ref p { margin: 0; color: var(--text-dov); font-size: 16px; }
+.ref-not { margin: 28px 0 0; max-width: 46em; }
+.ref-not p { margin: 0 0 14px; }
+.ref-not p:last-child { margin-bottom: 0; }
+
 /* Om */
 .om-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; }
 .om-grid p { margin: 0 0 16px; max-width: 36em; }
@@ -133,6 +144,8 @@ section + section { border-top: 1px solid var(--linje); }
   .hero .wrap { grid-template-columns: 1fr; padding-block: 48px; gap: 32px; }
   .sekt-huvud, .ai-grid, .om-grid { grid-template-columns: 1fr; gap: 20px; }
   .tjanster { grid-template-columns: 1fr; gap: 0; }
+  .ref-grid { grid-template-columns: 1fr; }
+  .ref, .ref + .ref { padding: 22px 0; padding-left: 0; border-left: 0; }
   .kontakt-grid { grid-template-columns: 1fr; gap: 24px; }
   section { padding-block: 52px; }
   .blad dl { grid-template-columns: 1fr; }
