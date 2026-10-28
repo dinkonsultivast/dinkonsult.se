@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Kajstrategin i sju delar</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="kajer.css">
+<style>
+/* Layout: strategin byggs som en kajmur av sju block på pålar, detaljer i panelen bredvid. */
+.meter{display:grid;gap:8px;margin:6px 0 18px;max-width:760px}
+.meter .bar{display:flex;height:14px;border:1px solid var(--rule);background:var(--panel)}
+.meter .bar i{display:block;height:100%}
+.meter .txt{font-size:14px;color:var(--muted)}
+.meter .txt b{color:var(--ink);font-family:var(--f-display);font-size:22px;font-weight:700;margin-right:4px}
+.legendrow{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legendrow span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;display:inline-block;border:2px solid currentColor}
+.sw.saknas{background:transparent;border-style:dashed;color:var(--st-saknas)}
+.sw.delvis{background:linear-gradient(90deg,var(--st-delvis) 50%,transparent 50%);color:var(--st-delvis)}
+.sw.finns{background:var(--st-finns);color:var(--st-finns)}
+.build{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:920px){.build{grid-template-columns:minmax(0,1fr)}}
+.quay{display:grid;grid-template-columns:72px minmax(0,1fr);gap:0;min-width:0}
+.river{background:linear-gradient(180deg,transparent 0 22%,var(--water) 22% 100%);border-right:3px solid var(--water-edge);position:relative;min-height:100%}
+.river::after{content:"Göta älv";position:absolute;left:50%;top:60%;transform:translate(-50%,-50%) rotate(-90deg);font:italic 600 14px var(--f-display);letter-spacing:.3em;color:var(--water-edge);white-space:nowrap}
+.wall{display:grid;gap:6px;padding:0 0 0 6px;min-width:0}
+.course{display:grid;gap:6px}
+.c1{grid-template-columns:minmax(0,1fr)}
+.c2,.c4{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:560px){.c2,.c4{grid-template-columns:minmax(0,1fr)}.quay{grid-template-columns:34px minmax(0,1fr)}.river::after{display:none}.piles,.pilecap{margin-left:40px!important}}
+.tag{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+.blk{min-width:0;overflow-wrap:anywhere;position:relative;text-align:left;background:var(--stone);border:1px solid var(--stone-edge);border-left:6px solid var(--stone-edge);padding:12px 12px 12px 14px;min-height:78px;cursor:pointer;color:var(--ink);display:grid;gap:3px;align-content:start;font:inherit;border-radius:2px}
+.blk:hover{filter:brightness(1.04)}
+.blk[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:-1px}
+.blk .n{font:600 12px var(--f-mono);color:var(--muted)}
+.blk .h{font:700 20px/1.05 var(--f-display)}
+.blk .st{font:500 12px var(--f-body);display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.blk.saknas{border-left-color:var(--st-saknas);border-left-style:dashed}
+.blk.delvis{border-left-color:var(--st-delvis)}
+.blk.finns{border-left-color:var(--st-finns);background:color-mix(in srgb,var(--st-finns) 14%,var(--stone))}
+.piles{display:flex;justify-content:space-around;height:46px;margin-left:6px;position:relative}
+.piles i{width:7px;background:repeating-linear-gradient(180deg,var(--pile) 0 8px,transparent 8px 10px);border-radius:0 0 3px 3px}
+.pilecap{font-size:12px;color:var(--muted);margin:4px 0 0 78px}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:18px;display:grid;gap:12px;position:sticky;top:12px;min-width:0}
+.panel .n{font:600 12px var(--f-mono);color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.panel h2{font:700 30px/1.02 var(--f-display);margin:0;text-wrap:balance}
+.panel dl{margin:0;display:grid;gap:10px}
+.panel dt{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel dd{margin:2px 0 0}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--muted);font:500 13px var(--f-body);padding:5px 12px;cursor:pointer}
+.seg button[aria-pressed="true"].s-saknas{background:var(--st-saknas);color:#fff}
+.seg button[aria-pressed="true"].s-delvis{background:var(--st-delvis);color:#1b1b1b}
+.seg button[aria-pressed="true"].s-finns{background:var(--st-finns);color:#fff}
+.reset{font:500 13px var(--f-body);background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline}
+h3{font:700 26px var(--f-display);margin:34px 0 10px}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;counter-reset:ph}
+.ph{border:1px solid var(--rule);background:var(--panel);padding:14px;display:grid;gap:6px;align-content:start}
+.ph .k{font:600 12px var(--f-mono);color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.ph b{font:700 20px var(--f-display)}
+.ph small{color:var(--muted);font-size:13.5px;line-height:1.4}
+.classes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;align-items:start}
+@media (max-width:920px){.classes{grid-template-columns:minmax(0,1fr)}}
+.clist{display:grid;gap:6px}
+.cbtn{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--rule);background:var(--panel);padding:10px 12px;cursor:pointer;color:var(--ink);font:inherit}
+.cbtn[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:-1px}
+.cbtn .sq{width:22px;height:22px;border-radius:3px}
+.cbtn b{font:700 18px var(--f-display);display:block}
+.cbtn small{color:var(--muted);font-size:13px}
+.cbtn .cnt{font:600 18px var(--f-mono)}
+.cdetail{display:grid;gap:8px}
+.cdetail p{margin:0}
+.cdetail ul{margin:0;padding-left:18px;columns:2;column-gap:20px;font-size:13.5px}
+@media (max-width:520px){.cdetail ul{columns:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Arbetsmaterial · Kajer Göteborg · oktober 2026 <span class="themebar" id="themebar" aria-label="Färgtema"><button data-t="auto">Auto</button><button data-t="light">Ljust</button><button data-t="dark">Mörkt</button></span></div>
+  <h1>Kajstrategin <span>i sju delar</span></h1>
+  <p class="lede">En kajstrategi byggs som en kajmur: först grunden, sedan det som bär användningen och sist kajkanten där genomförandet syns. Klicka på ett block för att se vad delen innehåller, hur långt Göteborg har kommit och vilken stad som visar vägen. Du kan ändra läget för att pröva hur långt en åtgärd tar strategin.</p>
+  <nav class="pages" aria-label="Sidor"><a href="index.html">Kajatlas</a><a href="steg.html">Steg för steg</a><a href="strategi.html" aria-current="page">Kajstrategin</a></nav>
+</header>
+
+<section class="meter" aria-live="polite">
+  <div class="txt" id="metertxt"></div>
+  <div class="bar" id="meterbar"></div>
+  <div class="legendrow"><span><i class="sw finns"></i>Finns</span><span><i class="sw delvis"></i>Delvis på plats</span><span><i class="sw saknas"></i>Saknas</span><button class="reset" id="reset" hidden>Återställ till läget i dag</button></div>
+</section>
+
+<div class="build">
+  <div>
+    <div class="quay">
+      <div class="river" aria-hidden="true"></div>
+      <div class="wall" id="wall"></div>
+    </div>
+    <div class="piles" aria-hidden="true" style="margin-left:78px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="pilecap">Pålarna: data om varje kaj. Inspektioner i BaTMan, planer, kostnader från genomförda projekt.</p>
+  </div>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+</div>
+
+<h3>I vilken ordning</h3>
+<div class="phases">
+  <div class="ph"><span class="k">Fas 1, delrapport</span><b>Inventering och klassning</b><small>Del 1 och 2 läggs fram för sig. De kan användas direkt i översiktsplanen och stadens prioriteringar, och strategin slutar vänta på andra processer.</small></div>
+  <div class="ph"><span class="k">Fas 2</span><b>Ekonomi och ansvar</b><small>Del 3 och 4. Livscykelkostnad per klass och vem som äger, förvaltar och betalar. Här avgörs vad underhållsskulden är i kronor.</small></div>
+  <div class="ph"><span class="k">Fas 3</span><b>Användning, geografi och genomförande</b><small>Del 5 till 7. Principer, delområden och ett kajprogram med flerårig ram och nyckeltal som rapporteras varje år.</small></div>
+</div>
+
+<h3>Klasserna i del 2</h3>
+<div class="classes">
+  <div class="clist" id="clist"></div>
+  <div class="cdetail">
+    <svg id="karta" aria-label="Karta med kajerna i vald klass"></svg>
+    <div id="cinfo"></div>
+  </div>
+</div>
+
+<footer class="foot">Preliminärt arbetsmaterial som bygger på offentliga handlingar. Läget för Göteborg är en bedömning utifrån stadens publicerade handlingar hösten 2026 och ska stämmas av med staden. Förebilderna kommer från jämförelsen med tio städer. Kartan bygger på OpenStreetMap, © OpenStreetMap contributors.</footer>
+</div>
+
+<script src="data.js"></script>
+<script src="kajkarta.js"></script>
+<script>
+KajTema();
+const PARTS=[
+ {n:1,h:"Inventering och tillstånd",course:"grund",st:"delvis",
+  inn:"Konstruktion, bärighet, återstående livslängd och föroreningar för varje kaj, mätt och inte bara bedömt.",
+  gbg:"Byggnadsverken registreras i BaTMan och inspekteras, men någon samlad bild av skick och underhållsskuld finns inte publicerad.",
+  fore:"Amsterdam mätte och provbelastade, och antalet broar som måste ersättas sjönk från 80 till 120 till 10 till 20. Hamburg undersökte pålarna i Speicherstadt innan ett tioårigt program på cirka 500 miljoner euro beslutades.",
+  steg:"Sammanställ stadens inspektionsdata per kaj och mät där bärigheten är osäker.",vem:"Stadsmiljönämnden"},
+ {n:2,h:"Klassning",course:"grund",st:"delvis",
+  inn:"Varje kaj får en klass efter funktion, med finansieringsprincip och standard för drift och underhåll per klass.",
+  gbg:"Kommunfullmäktige har delat in kajerna i kommersiella och icke kommersiella, och strukturutredningen för Gullbergsvass säger att kaj bara ska byggas där fartyg behöver den. En klassning av alla kajer saknas.",
+  fore:"Rotterdam har ett samlat register över kommunens cirka 30 km kajmur med ålder, typ och skickindex.",
+  steg:"Fastställ klasserna och pröva dem på älvkanterna mellan Älvsborgsbron och Marieholmsbroarna. Se förslaget längre ned.",vem:"Stadsbyggnadsnämnden med stadsmiljö och exploatering"},
+ {n:3,h:"Livscykelekonomi",course:"mitt",st:"saknas",
+  inn:"När lönar det sig att reinvestera, bygga nytt eller ersätta kajen med slänt? Kostnad per år över livslängden, inte bara investeringen.",
+  gbg:"Det finns kalkyler för enskilda kajer, som Gullbergs kaj, men ingen gemensam modell.",
+  fore:"Antwerpen delar kostnaden efter funktion: regionen betalar kajmur och skydd mot högvatten, staden ytan. För 750 m i Nieuw Zuid satsade regionen 70 miljoner euro.",
+  steg:"Ta fram priser per meter från genomförda projekt i samma prisnivå: kanalmurarna, Packhuskajen, Lilla Bommen, Lindholmshamnen och Åvägen.",vem:"Exploateringsnämnden och stadsmiljönämnden"},
+ {n:4,h:"Ansvarsmatris",course:"mitt",st:"delvis",
+  inn:"Vem som äger, förvaltar, beslutar om upplåtelse och betalar, för varje klass.",
+  gbg:"Ägande och förvaltning beslutades 2022, men strategin ligger i en tredje nämnd och någon samlad matris finns inte.",
+  fore:"Stockholms kajstrategi från 2022 har en tydlig tabell över ansvaret mellan nämnder och hamnbolag.",
+  steg:"Rita upp dagens beslutsvägar för en kajplats, en reinvestering och en upplåtelse.",vem:"Kommunstyrelsen"},
+ {n:5,h:"Principer för användning",course:"mitt",st:"delvis",
+  inn:"Allmänhetens tillgång, kajplatser, husbåtar, tillfällig användning och klimatanpassning.",
+  gbg:"Husbåtar och en utredning om var kajplatserna ska ligga pågår, och revideringen av översiktsplanen förtydligar kajpromenaden.",
+  fore:"Stockholm har fem principer för kajerna. Nantes började med tillfällig användning och kultur i varvshallarna innan husen kom.",
+  steg:"Samla de pågående delutredningarna under strategin.",vem:"Stadsbyggnadsnämnden"},
+ {n:6,h:"Geografisk del",course:"mitt",st:"delvis",
+  inn:"Älvrummet delat i delområden med en inriktning för varje område.",
+  gbg:"Arbetet är avgränsat till älvkanterna mellan Älvsborgsbron och Marieholmsbroarna, och stadens inriktning för stadsutvecklingen delar in staden i områden.",
+  fore:"Antwerpens masterplan från 2010 delar 6,7 km kaj i sju zoner och har hållit ihop etapper i mer än femton år.",
+  steg:"Lägg klassningen på kartan per delområde.",vem:"Stadsbyggnadsnämnden"},
+ {n:7,h:"Genomförande och uppföljning",course:"kant",st:"delvis",
+  inn:"Åtgärdslista med ansvarig och år, flerårig ram och nyckeltal som meter kaj per klass och skick, underhållsskuld i miljoner kronor och andel kaj tillgänglig för allmänheten.",
+  gbg:"Kanalmurarna har ett program med en ram på 4,5 till 5 miljarder kronor till cirka 2043. Älvkajerna saknar program, ram och nyckeltal.",
+  fore:"Amsterdam rapporterar kajprogrammet till fullmäktige två gånger per år med mål i meter kaj. Hamburg har en fast ram på tio år för Speicherstadt.",
+  steg:"Ett kajprogram för älvkajerna med samma upplägg som kanalmursprogrammet.",vem:"Kommunfullmäktige genom budgeten"}
+];
+const START=PARTS.map(p=>p.st);
+const STN={saknas:"Saknas",delvis:"Delvis på plats",finns:"Finns"};
+let sel=0;
+const wall=document.getElementById("wall");
+function blk(p,i){return `<button class="blk ${p.st}" data-i="${i}" aria-pressed="${i===sel}"><span class="n">Del ${p.n}</span><span class="h">${p.h}</span><span class="st"><i class="sw ${p.st}"></i>${STN[p.st]}</span></button>`}
+function render(){
+  const by=c=>PARTS.map((p,i)=>[p,i]).filter(([p])=>p.course===c);
+  wall.innerHTML=`<div class="tag">Kajkant: det som syns</div><div class="course c1">${by("kant").map(([p,i])=>blk(p,i)).join("")}</div>
+  <div class="tag">Muren: det som bär användningen</div><div class="course c4">${by("mitt").map(([p,i])=>blk(p,i)).join("")}</div>
+  <div class="tag">Grunden: det allt vilar på</div><div class="course c2">${by("grund").map(([p,i])=>blk(p,i)).join("")}</div>`;
+  wall.querySelectorAll(".blk").forEach(b=>b.onclick=()=>{sel=+b.dataset.i;render();if(innerWidth<920)document.getElementById("panel").scrollIntoView({behavior:"smooth",block:"start"})});
+  const p=PARTS[sel];
+  document.getElementById("panel").innerHTML=`<span class="n">Del ${p.n} av 7</span><h2>${p.h}</h2>
+  <dl><div><dt>Vad delen innehåller</dt><dd>${p.inn}</dd></div>
+  <div><dt>Göteborg i dag</dt><dd>${p.gbg}</dd></div>
+  <div><dt>Förebild</dt><dd>${p.fore}</dd></div>
+  <div><dt>Första steget</dt><dd>${p.steg}</dd></div>
+  <div><dt>Driver frågan</dt><dd>${p.vem}</dd></div>
+  <div><dt>Pröva läget</dt><dd><span class="seg">${["saknas","delvis","finns"].map(s=>`<button class="s-${s}" data-s="${s}" aria-pressed="${p.st===s}">${STN[s]}</button>`).join("")}</span></dd></div></dl>`;
+  document.querySelectorAll("#panel .seg button").forEach(b=>b.onclick=()=>{PARTS[sel].st=b.dataset.s;render()});
+  const c={finns:0,delvis:0,saknas:0};PARTS.forEach(p=>c[p.st]++);
+  const score=c.finns+c.delvis*.5,pct=Math.round(score/7*100);
+  document.getElementById("metertxt").innerHTML=`<b>${pct} %</b> av en färdig kajstrategi är på plats i dag, räknat som ${c.finns} ${c.finns===1?'del':'delar'} som finns, ${c.delvis} delvis och ${c.saknas} som ${c.saknas===1?'saknas':'saknas'}.`;
+  document.getElementById("meterbar").innerHTML=PARTS.map(p=>`<i style="width:${100/7}%;background:${p.st==="finns"?"var(--st-finns)":p.st==="delvis"?"linear-gradient(90deg,var(--st-delvis) 50%,transparent 50%)":"transparent"};border-right:1px solid var(--rule)"></i>`).join("");
+  document.getElementById("reset").hidden=PARTS.every((p,i)=>p.st===START[i]);
+}
+document.getElementById("reset").onclick=()=>{PARTS.forEach((p,i)=>p.st=START[i]);render()};
+render();
+
+/* Klasserna */
+const D=window.KAJDATA;
+const CL=[["A","Hamnkaj","Kommersiell kaj för hamnens eller fiskets verksamhet.","Marknadsmässig avkastning, hamnens eller bolagets egen ekonomi."],
+ ["B","Trafikkaj","Kaj som behövs för fartyg: färjor, gästhamn, upplevelsesjöfart och kulturhistoriska fartyg.","Självkostnad, avgifter från användarna och trafikhuvudmannen."],
+ ["C","Stadskaj","Kaj som stadsrum och kulturmiljö, där kajformen har ett värde även utan fartyg.","Skatt för konstruktionen, exploateringsbidrag vid nybyggnad och fastighetsägarnas bidrag till drift och skötsel."],
+ ["D","Stödkonstruktion","Kanalmur eller kaj som bär gata, byggnader eller stabilitet och inte kan tas bort.","Skatt med fast flerårig ram och statsbidrag för stabilitetsdelen."],
+ ["E","Omställningskaj","Kaj utan fartygsfunktion som kan ersättas med slänt, park eller älvkantsskydd.","Högvatten och klimatanpassningsbudget, där lägsta livscykelkostnad styr."],
+ ["F","Avvaktar plan","Kaj i omvandlingsområde vars framtid avgörs av kommande plan.","Minimiunderhåll och säkerhet tills exploateringsavtalet avgör."]];
+let csel="E";
+const kmap=Kajkarta(document.getElementById("karta"),D,{areas:false});
+function renderC(){
+  document.getElementById("clist").innerHTML=CL.map(([c,n,d])=>`<button class="cbtn" data-c="${c}" aria-pressed="${c===csel}"><span class="sq" style="background:var(--k-${c})"></span><span><b>${c} ${n}</b><small>${d}</small></span><span class="cnt">${D.kajer.filter(k=>k.sklass===c).length}</span></button>`).join("");
+  document.querySelectorAll(".cbtn").forEach(b=>b.onclick=()=>{csel=b.dataset.c;renderC()});
+  const cl=CL.find(x=>x[0]===csel),list=D.kajer.filter(k=>k.sklass===csel);
+  kmap.paint(k=>k.sklass===csel?{fill:`var(--k-${csel})`,r:12}:{fill:"var(--muted)",op:.3,r:7});
+  document.getElementById("cinfo").innerHTML=`<p><b>Finansiering:</b> ${cl[3]}</p><ul>${list.map(k=>`<li>${k.namn}</li>`).join("")}</ul>${csel==="A"?'<p class="note">Hamnens kajer ingår inte i bedömningen.</p>':""}`;
+}
+renderC();
+</script>
+</body>
+</html>

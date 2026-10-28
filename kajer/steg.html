@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Kajerna steg för steg</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="kajer.css">
+<style>
+/* Layout: berättelsen till vänster, kartan står kvar till höger och byter markering per steg. */
+.stepper{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 18px}
+.stepper button{width:34px;height:34px;border-radius:50%;border:1px solid var(--rule);background:transparent;color:var(--muted);font:600 14px var(--f-mono);cursor:pointer}
+.stepper button[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.stepper button.done{color:var(--ink);border-color:var(--ink)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;align-items:start}
+@media (max-width:920px){.stage{grid-template-columns:minmax(0,1fr)}.mapcol{order:-1}}
+.story{min-width:0;display:grid;gap:14px}
+.story .num{font-family:var(--f-mono);font-size:12px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.story h2{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.02;margin:0;text-wrap:balance}
+.story p{margin:0;max-width:62ch}
+.visual{min-width:0;border-top:1px solid var(--rule);padding-top:14px}
+.visual svg{width:100%;height:auto;display:block}
+.visual .ax{font:500 12px var(--f-mono);fill:var(--muted)}
+.visual .lab{font:500 13px var(--f-body);fill:var(--ink)}
+.visual .val{font:600 13px var(--f-mono);fill:var(--ink)}
+.visual .grid{stroke:var(--rule);stroke-width:1}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.big div{background:var(--paper);padding:12px 14px;display:grid;gap:2px}
+.big b{font-family:var(--f-display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{color:var(--muted);font-size:13px;line-height:1.3}
+.mapcol{position:sticky;top:12px;min-width:0;display:grid;gap:8px}
+.mapcap{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.mapcap span{display:inline-flex;align-items:center;gap:6px}
+.nav{display:flex;gap:10px;align-items:center;margin-top:6px}
+.nav button,.nav a.btn{font:600 15px var(--f-body);padding:9px 16px;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;text-decoration:none}
+.nav .primary{background:var(--ink);color:var(--paper)}
+.nav button[disabled]{opacity:.35;cursor:default}
+.nav .hint{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-left:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.card{border:1px solid var(--rule);background:var(--panel);padding:12px;display:grid;gap:4px;align-content:start}
+.card b{font-family:var(--f-display);font-size:24px;line-height:1.05}
+.card .who{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.card small{color:var(--muted);font-size:13px;line-height:1.35}
+ol.parts{margin:0;padding-left:22px;display:grid;gap:4px}
+ol.parts li.hl{font-weight:600}
+ol.parts li.hl::marker{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Arbetsmaterial · Kajer Göteborg · oktober 2026 <span class="themebar" id="themebar" aria-label="Färgtema"><button data-t="auto">Auto</button><button data-t="light">Ljust</button><button data-t="dark">Mörkt</button></span></div>
+  <h1>Kajerna <span>steg för steg</span></h1>
+  <p class="lede">Nio steg från hur kajerna mår i dag till vad en kajstrategi behöver göra. Bläddra med knapparna eller piltangenterna.</p>
+  <nav class="pages" aria-label="Sidor"><a href="index.html">Kajatlas</a><a href="steg.html" aria-current="page">Steg för steg</a><a href="strategi.html">Kajstrategin</a></nav>
+</header>
+
+<div class="stepper" id="stepper" role="tablist" aria-label="Steg"></div>
+
+<div class="stage">
+  <section class="story" id="story" aria-live="polite"></section>
+  <div class="mapcol">
+    <svg id="karta" aria-label="Karta över älvrummet med kajerna"></svg>
+    <div class="mapcap" id="mapcap"></div>
+  </div>
+</div>
+
+<footer class="foot">Preliminärt arbetsmaterial som bygger på offentliga handlingar: nämnd och fullmäktigehandlingar, detaljplaner, bolagshandlingar och rapporter från de jämförda städerna. Belopp anges i den prisnivå källan anger. Kartan bygger på OpenStreetMap, © OpenStreetMap contributors.</footer>
+</div>
+
+<script src="data.js"></script>
+<script src="kajkarta.js"></script>
+<script>
+KajTema();
+const D=window.KAJDATA, NS="http://www.w3.org/2000/svg";
+const map=Kajkarta(document.getElementById("karta"),D);
+const by=id=>D.kajer.find(k=>k.id===id);
+function S(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
+function svgBox(w,h){const s=document.createElementNS(NS,"svg");s.setAttribute("viewBox",`0 0 ${w} ${h}`);return s}
+const fmt=n=>n.toLocaleString("sv-SE");
+
+/* Diagram: punkt med spann för belopp, en rad per post */
+function rangeChart(rows,max,ticks,unit,note){
+  const w=700,rowH=34,top=24,left=250,right=120,h=top+rows.length*rowH+34;const s=svgBox(w,h);
+  const X=v=>left+(v/max)*(w-left-right);
+  for(const t of ticks){S("line",{x1:X(t),x2:X(t),y1:top,y2:h-26,class:"grid"},s);S("text",{x:X(t),y:h-8,class:"ax","text-anchor":"middle"},s,fmt(t))}
+  S("text",{x:left,y:12,class:"ax"},s,unit);
+  rows.forEach((r,i)=>{const y=top+i*rowH+rowH/2;S("text",{x:left-12,y:y+4,class:"lab","text-anchor":"end"},s,r[0]);
+    const lo=r[1],hi=r[2],mid=(lo+hi)/2;
+    if(hi>lo){S("line",{x1:X(lo),x2:X(hi),y1:y,y2:y,stroke:"var(--accent)","stroke-width":2},s);for(const v of [lo,hi])S("line",{x1:X(v),x2:X(v),y1:y-6,y2:y+6,stroke:"var(--accent)","stroke-width":2},s)}
+    S("circle",{cx:X(mid),cy:y,r:5.5,fill:"var(--accent)"},s);
+    S("text",{x:X(hi)+10,y:y+4,class:"val"},s,r[3]);
+  });
+  const d=document.createElement("div");d.appendChild(s);if(note){const p=document.createElement("p");p.className="note";p.textContent=note;d.appendChild(p)}return d;
+}
+/* Diagram: ansvaret */
+function ansvar(){
+  const s=svgBox(640,300);
+  const box=(x,y,w,h,t1,t2,col)=>{S("rect",{x,y,width:w,height:h,rx:4,fill:"var(--panel)",stroke:col||"var(--rule)","stroke-width":col?2:1},s);S("text",{x:x+12,y:y+24,class:"lab","font-weight":"600"},s,t1);t2.forEach((t,i)=>S("text",{x:x+12,y:y+44+i*17,class:"ax"},s,t))};
+  box(190,8,260,52,"Kommunfullmäktige",["beslutar om ram och uppdrag"]);
+  box(8,108,196,86,"Exploateringsnämnden",["äger kajerna","styr investeringen"],"var(--accent)");
+  box(222,108,196,86,"Stadsmiljönämnden",["förvaltar kajerna","bär kapitalkostnaden"],"var(--accent)");
+  box(436,108,196,86,"Stadsbyggnadsnämnden",["ska ta fram","kajstrategin"]);
+  box(8,226,300,62,"Göteborgs Hamn AB",["äger de kommersiella kajerna"]);
+  box(332,226,300,62,"Älvstranden Utveckling AB",["avvecklas senast 2035"]);
+  for(const x of [106,320,534])S("line",{x1:x,y1:60,x2:x,y2:104,stroke:"var(--muted)","stroke-width":1.4},s);
+  S("line",{x1:106,y1:60,x2:534,y2:60,stroke:"var(--muted)","stroke-width":1.4},s);
+  S("path",{d:"M204 151 L216 151",stroke:"var(--accent)","stroke-width":2.5,"marker-end":"url(#ah)"},s);
+  const m=S("marker",{id:"ah",viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:7,markerHeight:7,orient:"auto"},S("defs",{},s));S("path",{d:"M0 0L10 5L0 10z",fill:"var(--accent)"},m);
+  return s;
+}
+/* Diagram: tidslinje */
+function tidslinje(){
+  const s=svgBox(640,250);const x0=60,x1=600,y=112;const X=t=>x0+(t-2021.5)/(2026.9-2021.5)*(x1-x0);
+  S("line",{x1:x0,x2:x1,y1:y,y2:y,stroke:"var(--ink)","stroke-width":2},s);
+  for(let yr=2022;yr<=2026;yr++){S("line",{x1:X(yr),x2:X(yr),y1:y-5,y2:y+5,stroke:"var(--ink)"},s);S("text",{x:X(yr),y:y+22,class:"ax","text-anchor":"middle"},s,yr)}
+  const ev=[[2021.87,"Budgetuppdrag om","ägande och förvaltning",-2],[2022.07,"KF ger uppdraget","om kajstrategi",1],[2023.0,"Ny organisation:","tre nämnder",-1],[2024.95,"Strategin skulle","vara klar",1,true],[2025.4,"ÖISS återremitteras,","högvattenbeslut",-1],[2026.1,"Budget 2026:","öppet, ingen tidplan",2]];
+  for(const [t,a,b,lv,hot] of ev){const side=lv<0?-1:1,x=X(t),yy=lv===-2?y-66:lv===-1?y-30:lv===1?y+46:y+80;
+    S("circle",{cx:x,cy:y,r:hot?7:5,fill:hot?"var(--s-avst)":"var(--accent)"},s);
+    S("line",{x1:x,x2:x,y1:side<0?y-8:y+8,y2:side<0?yy+4:yy-14,stroke:"var(--rule)"},s);
+    S("text",{x,y:side<0?yy-14:yy,class:"lab","text-anchor":"middle"},s,a);S("text",{x,y:side<0?yy+2:yy+16,class:"ax","text-anchor":"middle"},s,b)}
+  return s;
+}
+/* Diagram: Skeppsbrogaragets kalkyl */
+function skeppsbron(){
+  const s=svgBox(640,262);const L=70,R=540,T=30,Bm=210;const pts=[["2012",579,579],["2016",628,628],["2017",828,828],["2023","1226",1226],["2023",1650,1710]];
+  const ys=v=>Bm-(v/2000)*(Bm-T);const xs=i=>L+i*(R-L)/(pts.length-1);
+  for(const t of [0,500,1000,1500,2000]){S("line",{x1:L,x2:R,y1:ys(t),y2:ys(t),class:"grid"},s);S("text",{x:L-10,y:ys(t)+4,class:"ax","text-anchor":"end"},s,fmt(t))}
+  S("text",{x:L,y:12,class:"ax"},s,"mnkr");
+  const mid=p=>(+p[1]+p[2])/2;
+  S("polyline",{points:pts.map((p,i)=>xs(i)+","+ys(mid(p))).join(" "),fill:"none",stroke:"var(--s-avst)","stroke-width":2.5},s);
+  const lab=["579","628","828","1 226","1 650 till 1 710"],sub=["","beslut","","2021 års nivå","2028 års nivå"];
+  pts.forEach((p,i)=>{const x=xs(i);if(p[2]!=+p[1]){S("line",{x1:x,x2:x,y1:ys(p[2]),y2:ys(+p[1]),stroke:"var(--s-avst)","stroke-width":2},s)}
+    S("circle",{cx:x,cy:ys(mid(p)),r:5.5,fill:"var(--s-avst)"},s);
+    S("text",{x:i===4?x-8:x,y:ys(mid(p))-14,class:"val","text-anchor":i===4?"end":"middle"},s,lab[i]);
+    S("text",{x,y:Bm+20,class:"ax","text-anchor":"middle"},s,p[0]);if(sub[i])S("text",{x,y:Bm+36,class:"ax","text-anchor":"middle"},s,sub[i])});
+  return s;
+}
+/* Diagram: klasser som stapel */
+function klassStapel(){
+  const order=["A","B","C","D","E","F"],names={A:"Hamnkaj",B:"Trafikkaj",C:"Stadskaj",D:"Stödkonstruktion",E:"Omställningskaj",F:"Avvaktar plan"};
+  const n=c=>D.kajer.filter(k=>k.sklass===c).length,tot=D.kajer.length;const s=svgBox(640,150);let x=0;const W=640;
+  for(const c of order){const w=n(c)/tot*W;S("rect",{x,y:10,width:w-2,height:46,fill:`var(--k-${c})`},s);S("text",{x:x+w/2,y:40,class:"val","text-anchor":"middle",fill:"var(--paper)",style:"fill:var(--paper)"},s,n(c));x+=w}
+  order.forEach((c,i)=>{const cx=(i%3)*214,cy=84+Math.floor(i/3)*26;S("rect",{x:cx,y:cy-11,width:12,height:12,fill:`var(--k-${c})`},s);S("text",{x:cx+18,y:cy,class:"lab"},s,c+" "+names[c])});
+  return s;
+}
+/* Diagram: Gullbergs kaj per år */
+function gullberg(){
+  const s=svgBox(640,200);const L=250,R=560,T=10;const X=v=>L+v/8*(R-L);
+  for(const t of [0,2,4,6,8]){S("line",{x1:X(t),x2:X(t),y1:T,y2:150,class:"grid"},s);S("text",{x:X(t),y:170,class:"ax","text-anchor":"middle"},s,t)}
+  S("text",{x:(L+R)/2,y:192,class:"ax","text-anchor":"middle"},s,"mnkr per år");
+  const rows=[["Reinvestering",150/30,190/30,"5,0 till 6,3","150 till 190 mnkr, cirka 30 år"],["Ny kaj och park",450/100,450/100,"högst 4,5","högst 450 mnkr, 100 år"],["Omställning",null,null,"räknas fram","slänt eller lägre skydd"]];
+  rows.forEach((r,i)=>{const y=T+22+i*44;S("text",{x:L-12,y:y,class:"lab","text-anchor":"end"},s,r[0]);S("text",{x:L-12,y:y+16,class:"ax","text-anchor":"end"},s,r[4]);
+    if(r[1]==null){S("rect",{x:X(0),y:y-12,width:X(4)-X(0),height:20,fill:"none",stroke:"var(--k-E)","stroke-dasharray":"5 4","stroke-width":2},s);S("text",{x:X(4)+10,y:y+3,class:"val"},s,r[3]);return}
+    S("rect",{x:X(0),y:y-12,width:X(r[1])-X(0),height:20,fill:i===0?"var(--k-C)":"var(--k-B)"},s);
+    if(r[2]>r[1])S("rect",{x:X(r[1]),y:y-12,width:X(r[2])-X(r[1]),height:20,fill:"var(--k-C)",opacity:.45},s);
+    S("text",{x:X(r[2])+10,y:y+3,class:"val"},s,r[3])});
+  return s;
+}
+function cards(list){const d=document.createElement("div");d.className="cards";d.innerHTML=list.map(c=>`<div class="card"><span class="who">${c[0]}</span><b>${c[1]}</b><small>${c[2]}</small></div>`).join("");return d}
+function big(list){const d=document.createElement("div");d.className="big";d.innerHTML=list.map(c=>`<div><b>${c[0]}</b><small>${c[1]}</small></div>`).join("");return d}
+
+const dim=()=>({fill:"var(--muted)",op:.35,r:7});
+const LAGEC={avst:"--s-avst",skada:"--s-skada",bygg:"--s-bygg",still:"--s-still",god:"--s-god",okant:"--s-okant"};
+const KLN={A:"Hamnkaj",B:"Trafikkaj",C:"Stadskaj",D:"Stödkonstruktion",E:"Omställningskaj",F:"Avvaktar plan"};
+const cap=items=>items.map(i=>`<span><i class="dot" style="background:var(${i[0]})"></i>${i[1]}</span>`).join("");
+
+const STEPS=[
+ {t:"Göteborg står på kajer",
+  p:["Längs Göta älv och i kanalerna finns kajer, kanalmurar och pirar som bär gator, hus, parker och färjelägen. Många byggdes för en hamn som inte längre finns där.","Ingen officiell siffra finns för hur mycket kaj staden har. Det säger något i sig: det saknas en samlad bild."],
+  v:()=>big([["30","kajer, kanalmurar och pirar i registret version 1"],["cirka 3 km","kanalmur i centrum"],["25 till 30 km","kaj enligt en uppskattning, inte en officiell siffra"]]),
+  m:()=>map.paint(()=>({fill:"var(--accent)",r:8})),cap:cap([["--accent","Kaj, kanalmur eller pir i registret"]])},
+ {t:"Många är i dåligt skick",
+  p:["Två kajer vid Röda Sten är avspärrade sedan 2019 och 2021. Östra kajen vid Lilla Bommen kan behöva stängas inom fem år. Gullbergs kaj har cirka tio år kvar. I kanalmurarna finns röta i pålarna och staden skriver att risken för ras inte går att förutse.","De kända kostnaderna är stora, men någon samlad underhållsskuld finns inte publicerad."],
+  v:()=>rangeChart([["Kanalmursprogrammet",4500,5000,"4 500 till 5 000"],["Högvattenskydd längs älven",2000,2000,"högst 2 000"],["Reinvestering byggnadsverk",1040,1040,"1 040"],["Fiskebäckshamn",360,740,"360 till 740"],["Gullbergs kaj",150,450,"150 till 450"],["Lilla Bommens hamn",345,345,"345"],["Kanalmur Åvägen",255,255,"255"],["Packhuskajen, etapp 2",190,190,"190"]],5200,[0,1000,2000,3000,4000,5000],"mnkr","Beloppen har olika prisnivåer och överlappar delvis, så de kan inte läggas ihop."),
+  m:()=>map.paint(k=>k.lage==="avst"?{fill:"var(--s-avst)",r:11}:k.lage==="skada"?{fill:"var(--s-skada)",r:10}:dim(),[{id:"K001",text:"Röda Sten"},{id:"K010",text:"Lilla Bommen",anchor:"end",dx:-14},{id:"K015",text:"Gullbergs kaj"},{id:"K011",text:"Stora Hamnkanalen",dy:22}]),
+  cap:cap([["--s-avst","Avstängd"],["--s-skada","Allvarliga skador eller passerad livslängd"]])},
+ {t:"Ansvaret är delat",
+  p:["Sedan 2023 äger exploateringsnämnden kajerna medan stadsmiljönämnden förvaltar dem och betalar räntor och avskrivningar efter en ombyggnad. Strategin ligger i en tredje nämnd.","Den som bär kostnaden styr alltså inte investeringen, och den som styr investeringen känner inte av kostnaden. Det är en klassisk grogrund för eftersatt underhåll."],
+  v:()=>ansvar(),m:()=>map.paint(dim),cap:"Ansvaret gäller alla stadens icke kommersiella kajer."},
+ {t:"Strategin har fastnat",
+  p:["Kommunfullmäktige gav 2022 stadsbyggnadsnämnden i uppdrag att ta fram en kajstrategi. Den skulle vara klar sista kvartalet 2024. I budget 2026 står uppdraget kvar utan tidplan.","Strategin har knutits till större processer, översiktsplanen och stadens inriktning för stadsutvecklingen, och blivit beroende av deras tidplaner."],
+  v:()=>tidslinje(),m:()=>map.paint(dim),cap:"Strategin är avgränsad till älvkanterna mellan Älvsborgsbron och Marieholmsbroarna."},
+ {t:"Det som fungerade, och det som inte gjorde det",
+  p:["På Eriksberg och Lindholmen bar markförsäljningen kajerna. Exploatören betalade allmän plats och kajer i stället för staden. Masthuggskajen bygger vidare på samma modell med 1 470 mnkr i exploateringsbidrag.","Skeppsbron visar var modellen slutar fungera. Garaget i älven skulle samtidigt vara grundläggning, stabilisering och påseglingsskydd. Kalkylen nästan tredubblades och projektet stoppades 2023, med 354 mnkr i förgäveskostnader."],
+  v:()=>{const d=document.createElement("div");d.appendChild(skeppsbron());const p=document.createElement("p");p.className="note";p.textContent="Kalkylen för Skeppsbrogaraget över tid. Störst var index och försening, därefter tyngre grundläggning och föroreningar.";d.appendChild(p);return d},
+  m:()=>{const hl={K007:"--s-avst",K005:"--s-god",K021:"--s-god",K022:"--s-god",K023:"--s-god",K026:"--s-god",K027:"--s-god",K028:"--s-god"};map.paint(k=>hl[k.id]?{fill:`var(${hl[k.id]})`,r:11}:dim(),[{id:"K007",text:"Skeppsbron",dy:26},{id:"K005",text:"Masthuggskajen",dy:28,anchor:"middle",dx:0},{id:"K023",text:"Eriksberg"},{id:"K028",text:"Lindholmen"}])},
+  cap:cap([["--s-god","Markvärdet bar kajen"],["--s-avst","Stoppat, för dyrt"]])},
+ {t:"Andra städer har gjort tre saker",
+  p:["Tio städer med liknande förutsättningar har jämförts, från Hamburg och Amsterdam till Glasgow och Bilbao. De som kommit framåt har mätt och klassat sina kajer före beslut, gett dem ett eget program med fast ram och kopplat dem till skyddet mot högvatten.","Ingen stad har låtit markvärdet bära allt. Hamburg fick lägga till cirka 774 miljoner euro i skattemedel, och Aarhus saknade 1,6 miljarder kronor (danska) 2024."],
+  v:()=>cards([["Amsterdam, mät först","80 till 120 blev 10 till 20","Så mycket minskade antalet broar som måste ersättas när den verkliga bärförmågan mättes."],["Hamburg, fast ram","500 MEUR på tio år","Ett program för de gamla kajerna i Speicherstadt efter att pålarna undersökts."],["Antwerpen, kaj och skydd","70 MEUR för 750 m","Regionen bygger kajmur och skydd mot högvatten, staden bygger ytan ovanpå."]]),
+  m:()=>map.paint(dim),cap:"Jämförelsen omfattar Antwerpen, Rotterdam, Amsterdam, Hamburg, Köpenhamn, Oslo, Aarhus, Nantes, Glasgow, Bilbao och Stockholms kajstrategi."},
+ {t:"Alla kajer är inte lika",
+  p:["En preliminär klassning delar kajerna efter vad de ska användas till. Bara 7 av 30 objekt behöver vara kaj för att fartyg ska kunna lägga till. Fem är kanalmurar och andra stödkonstruktioner som måste finnas kvar.","Sju objekt avvaktar en plan. Om en del av dem kan ersättas med slänt eller älvkantsskydd i stället för ny kaj sjunker kostnaden kraftigt."],
+  v:()=>klassStapel(),m:()=>map.paint(k=>({fill:`var(--k-${k.sklass})`,r:9})),
+  cap:cap(Object.keys(KLN).map(c=>[`--k-${c}`,c+" "+KLN[c]]))},
+ {t:"Gullbergs kaj: tre vägar",
+  p:["Gullbergs kaj bär parkering och ett cykelstråk, inte fartyg. Staden väljer i dag mellan en reinvestering och en ny kaj med park. Räknat per år av livslängd är den dyra nya kajen inte dyrare än reinvesteringen.","Ett tredje alternativ bör räknas fram: en slänt eller ett lägre skydd längs älven som samtidigt blir del av högvattenskyddet, om marken bakom kan hållas stabil."],
+  v:()=>{const d=document.createElement("div");d.appendChild(gullberg());const p=document.createElement("p");p.className="note";p.textContent="Förenklad jämförelse: investeringen delad med livslängden, utan ränta, drift och restvärde. En ny kaj dimensioneras normalt för 100 år, som i Lindholmshamnen.";d.appendChild(p);return d},
+  m:()=>map.paint(k=>k.id==="K015"?{fill:"var(--k-E)",r:13}:dim(),[{id:"K015",text:"Gullbergs kaj"}]),cap:cap([["--k-E","Gullbergs kaj, föreslagen omställningskaj"]])},
+ {t:"Därför börjar strategin med inventering och klassning",
+  p:["Det alla framgångsrika städer gjorde först är det som Göteborgs strategi har fastnat på. Om inventeringen och klassningen läggs fram som en egen delrapport kan de användas direkt i översiktsplanen och stadens prioriteringar, och strategin blir oberoende av de andra processernas tidplaner.","Kartan visar den preliminära prioriteringen. Fem objekt behöver beslut nu."],
+  v:()=>{const d=document.createElement("div");d.innerHTML=`<ol class="parts"><li class="hl">Inventering och tillstånd</li><li class="hl">Klassning</li><li>Livscykelekonomi</li><li>Ansvarsmatris</li><li>Principer för användning</li><li>Geografisk del</li><li>Genomförande och uppföljning</li></ol><div class="nav" style="margin-top:14px"><a class="btn primary" href="strategi.html">Utforska kajstrategin</a></div>`;return d},
+  m:()=>map.paint(k=>({fill:`var(--p-${k.prio})`,r:k.prio==="P1"?12:8}),[{id:"K001",text:"Röda Sten"},{id:"K010",text:"Lilla Bommen",anchor:"end",dx:-14},{id:"K015",text:"Gullbergs kaj"},{id:"K011",text:"Stora Hamnkanalen",dy:22}]),
+  cap:cap([["--p-P1","Prioritet 1, beslut nu"],["--p-P2","Inom fem till tio år"],["--p-P3","Planerat eller data saknas"],["--p-P4","Bevaka"]])}
+];
+
+let cur=0;
+const stepper=document.getElementById("stepper");
+STEPS.forEach((s,i)=>{const b=document.createElement("button");b.textContent=i+1;b.title=s.t;b.setAttribute("aria-label",`Steg ${i+1}: ${s.t}`);b.onclick=()=>go(i);stepper.appendChild(b)});
+function go(i){cur=Math.max(0,Math.min(STEPS.length-1,i));const s=STEPS[cur];
+  const st=document.getElementById("story");
+  st.innerHTML=`<div class="num">Steg ${cur+1} av ${STEPS.length}</div><h2>${s.t}</h2>${s.p.map(x=>`<p>${x}</p>`).join("")}<div class="visual" id="vis"></div>
+  <div class="nav"><button id="prev" ${cur===0?"disabled":""}>Föregående</button><button class="primary" id="next" ${cur===STEPS.length-1?"disabled":""}>Nästa</button><span class="hint">← →</span></div>`;
+  document.getElementById("vis").appendChild(s.v());
+  document.getElementById("prev").onclick=()=>go(cur-1);document.getElementById("next").onclick=()=>go(cur+1);
+  s.m();document.getElementById("mapcap").innerHTML=s.cap;
+  [...stepper.children].forEach((b,j)=>{b.toggleAttribute("aria-current",j===cur);if(j===cur)b.setAttribute("aria-current","step");b.classList.toggle("done",j<cur)});
+  if(location.hash!=="#steg-"+(cur+1))history.replaceState(null,"","#steg-"+(cur+1));
+}
+document.addEventListener("keydown",e=>{if(e.target.closest&&e.target.closest("input,textarea"))return;if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1)});
+const m=/^#steg-(\d+)$/.exec(location.hash);go(m?+m[1]-1:0);
+window.addEventListener("hashchange",()=>{const m=/^#steg-(\d+)$/.exec(location.hash);if(m&&+m[1]-1!==cur)go(+m[1]-1)});
+</script>
+</body>
+</html>

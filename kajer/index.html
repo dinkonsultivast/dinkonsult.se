@@ -766,6 +766,10 @@ td.mono{font-family:var(--f-mono);font-size:12px;white-space:nowrap}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;margin-right:8px}
 .seg button{border:0;background:transparent;color:var(--muted);font:500 13px var(--f-body);padding:4px 11px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+nav.pages{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+nav.pages a{font:500 14px var(--f-body);color:var(--muted);text-decoration:none;padding:5px 12px;border:1px solid var(--rule);border-radius:999px}
+nav.pages a[aria-current="page"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+nav.pages a:hover{color:var(--ink)}
 .basemode{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:auto}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -778,6 +782,7 @@ td.mono{font-family:var(--f-mono);font-size:12px;white-space:nowrap}
   <div class="eyebrow">Arbetsmaterial · Kajer Göteborg · Inventering version 1 · oktober 2026<span class="themebar" id="themebar" aria-label="Färgtema"><button data-t="auto">Auto</button><button data-t="light">Ljust</button><button data-t="dark">Mörkt</button></span></div>
   <h1>Kajatlas <span>Göteborg</span></h1>
   <p class="lede">Stadens kajer, kanalmurar och pirar längs älvrummet med skick, ägare, planläge och kända kostnader. Klicka på en kaj i kartan eller i registret för detaljer, och växla mellan läge i dag, strategiklass och prioritet. Klassningen är preliminär. Lägena är ungefärliga i denna version och verifieras mot stadens kajdata i fas 2.</p>
+  <nav class="pages" aria-label="Sidor"><a href="index.html" aria-current="page">Kajatlas</a><a href="steg.html">Steg för steg</a><a href="strategi.html">Kajstrategin</a></nav>
 </header>
 
 <section class="stats" id="stats"></section>
