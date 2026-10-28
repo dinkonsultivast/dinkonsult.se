@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Arbetsmaterial: Göteborgs kajer, kanalmurar och pirar med skick, planläge, kända kostnader och preliminär klassning. Oktober 2026.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<title>Kajatlas Göteborg</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+</style>
+<style>
+/* Layout: kartan är navet, med detaljpanel bredvid på stor skärm och under på mobil; registret följer under kartan. */
+:root{
+  --paper:#f3f1ec; --land:#e9e5dc; --ink:#1d2a30; --muted:#5d6a70; --rule:#d5d0c4;
+  --water:#9fc3cc; --water-edge:#7aa9b5; --road:#d9b88a; --pier:#47575e;
+  --accent:#b07a12; --panel:#fbfaf7; --chip:#e6e1d6;
+  --s-avst:#c0392b; --s-skada:#d9822b; --s-bygg:#2f6fb0; --s-still:#7b4fa0; --s-god:#3b8c5a; --s-okant:#8a9499;
+  --k-A:#3d5a80; --k-B:#1f8a8a; --k-C:#b07a12; --k-D:#8c4a2f; --k-E:#4a8c3f; --k-F:#8a86a3;
+  --p-P1:#c0392b; --p-P2:#e08a1e; --p-P3:#c9b03a; --p-P4:#8a9499;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#13191c; --land:#1b2327; --ink:#e7e9e6; --muted:#9aa6aa; --rule:#2c363a;
+  --water:#1f4450; --water-edge:#2f6070; --road:#5a4a33; --pier:#a9b6ba;
+  --accent:#e0a83a; --panel:#182024; --chip:#243034;
+  --s-avst:#ef6a5a; --s-skada:#f0a04b; --s-bygg:#5d9be0; --s-still:#ad85d6; --s-god:#5fbf85; --s-okant:#9aa6aa;
+  --k-A:#7fa3d6; --k-B:#4fc2c2; --k-C:#e0a83a; --k-D:#d0815e; --k-E:#7fc56f; --k-F:#b3afd0;
+  --p-P1:#ef6a5a; --p-P2:#f0a04b; --p-P3:#e3cf5e; --p-P4:#9aa6aa;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#13191c; --land:#1b2327; --ink:#e7e9e6; --muted:#9aa6aa; --rule:#2c363a;
+  --water:#1f4450; --water-edge:#2f6070; --road:#5a4a33; --pier:#a9b6ba;
+  --accent:#e0a83a; --panel:#182024; --chip:#243034;
+  --s-avst:#ef6a5a; --s-skada:#f0a04b; --s-bygg:#5d9be0; --s-still:#ad85d6; --s-god:#5fbf85; --s-okant:#9aa6aa;
+  --k-A:#7fa3d6; --k-B:#4fc2c2; --k-C:#e0a83a; --k-D:#d0815e; --k-E:#7fc56f; --k-F:#b3afd0;
+  --p-P1:#ef6a5a; --p-P2:#f0a04b; --p-P3:#e3cf5e; --p-P4:#9aa6aa;
+  color-scheme:dark }
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header{display:grid;gap:6px;margin-bottom:18px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1;margin:0;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.lede{max-width:70ch;color:var(--muted);margin:4px 0 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin:18px 0}
+.stat{background:var(--paper);padding:12px 14px;display:grid;gap:2px}
+.stat b{font-family:var(--f-display);font-size:clamp(22px,2.4vw,30px);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:13px;line-height:1.3}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.toolbar .lbl{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:4px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--chip);color:var(--ink);border-radius:999px;padding:4px 10px;font:500 13px var(--f-body);cursor:pointer}
+.chip[aria-pressed="false"]{background:transparent;color:var(--muted);opacity:.75}
+.chip:focus-visible,.row:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;border:1.5px solid var(--paper);box-shadow:0 0 0 1px var(--ink)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}}
+#map{height:min(68vh,640px);min-height:380px;background:var(--land);border:1px solid var(--rule)}
+.leaflet-container{background:var(--land);font-family:var(--f-body)}
+.leaflet-control-attribution{background:color-mix(in srgb,var(--paper) 85%,transparent)!important;color:var(--muted)!important;font-size:11px}
+.leaflet-control-attribution a{color:var(--muted)!important}
+.leaflet-bar a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--rule)!important}
+.area-label{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;pointer-events:none;text-shadow:0 0 3px var(--land),0 0 6px var(--land)}
+.water-label{font-family:var(--f-display);font-style:italic;font-size:14px;letter-spacing:.3em;color:var(--water-edge);white-space:nowrap;pointer-events:none}
+.kaj-tip{font:500 12px var(--f-body)}
+.legend{background:var(--panel);border:1px solid var(--rule);padding:8px 10px;font-size:12px;display:grid;gap:3px;color:var(--ink)}
+.legend div{display:flex;align-items:center;gap:6px}
+@media (max-width:640px){.legend{display:none}}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:16px;display:grid;gap:10px;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:26px;line-height:1.05;margin:0;text-wrap:balance}
+.panel .id{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid currentColor;width:max-content}
+dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:0;font-size:13.5px}
+dt{color:var(--muted)}
+dd{margin:0;overflow-wrap:anywhere}
+.panel a{color:var(--accent)}
+.empty{color:var(--muted);font-size:14px}
+.q{font-family:var(--f-mono);font-size:11px;border:1px solid var(--rule);padding:1px 6px;border-radius:4px}
+h3{font-family:var(--f-display);font-weight:600;font-size:22px;margin:28px 0 8px}
+.tablewrap{overflow-x:auto;border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:760px}
+th{font-family:var(--f-mono);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--panel)}
+td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr.row{cursor:pointer}
+tr.row:hover,tr.row.sel{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+td.mono{font-family:var(--f-mono);font-size:12px;white-space:nowrap}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px;font-size:13.5px;color:var(--muted)}
+.notes p{margin:0}
+.notes strong{color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;margin-right:8px}
+.seg button{border:0;background:transparent;color:var(--muted);font:500 13px var(--f-body);padding:4px 11px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.basemode{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Arbetsmaterial · Kajer Göteborg · Inventering version 1 · oktober 2026</div>
+  <h1>Kajatlas <span>Göteborg</span></h1>
+  <p class="lede">Stadens kajer, kanalmurar och pirar längs älvrummet med skick, ägare, planläge och kända kostnader. Klicka på en kaj i kartan eller i registret för detaljer, och växla mellan läge i dag, strategiklass och prioritet. Klassningen är preliminär. Lägena är ungefärliga i denna version och verifieras mot stadens kajdata i fas 2.</p>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<div class="toolbar"><span class="lbl">Färga efter</span><span class="seg" id="modes"><button id="m-lage" aria-pressed="true">Läge i dag</button><button id="m-klass" aria-pressed="false">Strategiklass</button><button id="m-prio" aria-pressed="false">Prioritet</button></span></div>
+<div class="toolbar" id="filters"><span class="lbl">Visa</span></div>
+
+<div class="stage">
+  <div id="map" role="application" aria-label="Karta över kajerna i Göteborg"></div>
+  <aside class="panel" id="panel" aria-live="polite"><p class="empty">Välj en kaj i kartan eller i registret.</p></aside>
+</div>
+
+<h3>Kajregister</h3>
+<div class="tablewrap"><table>
+  <thead><tr><th>Id</th><th>Kaj</th><th>Område</th><th>Läge</th><th>Klass</th><th>Prio</th><th>Kända kostnader</th><th>Kval.</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table></div>
+
+<div class="notes">
+  <p><strong>Status.</strong> Preliminärt arbetsmaterial som bygger på offentliga handlingar. Lägen, klassning och prioritet ska stämmas av mot stadens egna kajdata.</p>
+  <p><strong>Kvalitetsnivå.</strong> A betyder bekräftat i primärkälla som nämndhandling eller plan. B betyder sekundärkälla eller indirekt uppgift. C betyder preliminär bedömning eller läge satt från karta.</p>
+  <p><strong>Belopp.</strong> Beloppen är angivna i den prisnivå som källan anger och kan inte summeras rakt av. Någon samlad underhållsskuld för stadens kajer finns inte publicerad.</p>
+  <p><strong>Kartdata.</strong> Den förenklade kartan bygger på OpenStreetMap, © OpenStreetMap contributors (ODbL). När sidan öppnas från din dator visas i stället Göteborgs Stads baskarta och ortofoto, som kan växlas i kartans lagerväljare. Kajlägen och uppgifter från caset Kajer Göteborg.</p>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const VEC = {"W":["o}hfb@wgiF?CFBDAFK@@ENGBEACE","ommfb@_`gFA??CC?AHAG@CA?EO?APDCH@F","oiufb@scgFD@@E?ECCA??DAB?B","oigfb@_fhF@C@K@@?BALC??C","oszeb@m`iF@ADA?ABA@F?FABC?GE?E","o_pfb@s_gFEM@CBE@F@?@CCI?AJI@G@ABB@A@@?F??A@GG?DEB?JCJ?BBDABA@CPG?ACBI@AD@?ACE","o{seb@aehF@DBMCEAB?H","omffb@o`gFCBGCAGAA@C@CB@FN","oknfb@w~fFAEBA?EB?ADBB@CAE@??BFA?BGFCA?FCA?AA@?C","o_mfb@ejiFBFB@BA@EAGECC@EFB?","oumfb@ijiF@ICGCAE@?D@DHD","o}lfb@giiFEDCJFB?CDALIKIADA?AA","oeafb@sygF@ACQA@BP","oiqhb@cqiF@BP@FAL@?ED?@@?DD??@JA?CDCNFNKDF@?TK?EJABCD?DEH@DCDBJGLAFCBB@A?CH?BAAC@AJ@BCFE?A@C@DFADCBGP?HG^ITE^CFCM@??ACRCBBF?@A@CBBTAZ?HCBBBAB@FAR@FBF?BGJBHCt@FBDF@HGJ?JCHBLABFB?@G@?@??FB@DE@?@DFC@DRDDBLDN@HAB@DHHFNDBFHH@B@@@AB@?BHDJL@ABBD?DAFHNH@BPFA@RJ@CFD?B@AP@D@JJL?TFDAFBFAHDVBLCJ@XCF@LIT?XELBP?FAJB@?BE@@BC?B?BB??E@CDBHFLBJFHJ@CDA@EF@?@AFBF?AAG@ADH@?JG\\PP@?FSECDLAHB?FY@EBa@[p@l@B?@EBDAFC@BDFDRRBHLFRELEXCFCJCPKHAFIHALGFCDCPGJABCB@ADBB@??AAI@A@GBA?B@?BF@GLIHA?CNEB@@AVAFAH@@CB@?B@??A^LA@LH@A@?f@XABTJ?AVL?DBB@EB@LH?DB@?AXN?AFD?@FBB?TLABLF?ADB?@B@?ALFRN?AJB@ADBDY@AE`@p@`@Qz@CA?HGCD]?AKCAAA@EGSK?DA??GGCCTEA@W]QEd@CD?LABA?CAFs@KGEIIKAAABACI?SKACC?GIAE?@OIAEKEGGICEIEEEGGAIIGCAD?EAAADC?CGOIEKIA?BAAEEOCW?k@JUHUL?AUF?@KDm@Nc@PADCE?DE?WLA??CE?A@CAA??@CAS?EE?AAAABGAACSWA?Y[C@AMCCEB?KCCAAAHA?AA?GCIKIG?EGCLC??EGAGKI@?AE@ECG@?@??G?QBKCQ@M?ICI?E@CFG@MCKFCAQ@ABC@ACCDO@EGE@C@OAMCA@EGO?c@SIGIAGEOECIE@?DAB?I?CCAA@ACECCEADC@CC?GC???CF@GAAC@AA?BEAA@?GCCC??A?BEB?A?E?A?AGCCD?ABCCCADA???@GA?AAAB?GC??CA??AAAG@A@AD??CECEACCAAC@EI?AECN@O?EADA?CDAEAA?ECCCPCHAEDYA@E??AA?AB??GEE?IEIBC?MMADGA?@A@?AAAADCIA@?AA@?AAD???CACAHAEI@?EECA@EGC?KHADCICCA@C?A@?B?BCIA@AFA?AGGAGBGAQBA@E@CB?DACEACCC@?GE@?C?A@A?CKEC@CDE?CFECA@CAABAAEBAAK@?EACGAA@@LACCG?BA?A@?EA??CA?CC?@?@CA?BCACD?L?DAA?GAA@IC??CC?C@ECADAAAEI?BC?CC??BA@?BK@?FA?CNCAG@AEC?AB?BC??EEA?BA@CLODABCG?Q?EAA?@?JCBEACAMBCDk@R?@A?C??@AJAGABCAA@?BAAC@?FA?AG?BAA?@A?ADAKC@?HEE?DEGE@KCEJC@AD?IEC?JA@?CAACFC@C?ABACAAADIBCC?ACA?@?E??E?CDC?@EMBAFECA@ACE?G?ABGBECA@CAAGC???ABBBG?A@?L?DAG?KGEG??@B@C@?DA??EAAICADEE?DAC?EIAACEDCAA@OAAAC?CBCECAC@CECBAEG@ECABAAABIGA@@FEAEBAAABCGGBQEEBGAACEACGCDE?AACBCIA?AFC?CAIDEEE?[HKDUNG@?CEFI?IDCA?CYFQAUIGBEIF[FHJBHBN?NEDEl@OB@DGJAHED@FIHABAF?FI^A@A@GD?F?DDH??DA@@??C@@J@\\LD?RDFADDLE@?@DHE@DL@BDFBB?HC","owyeb@}hiFMD@B@AD@?BECA@@L@?@A?CCCB?@H@D@A?CAG@CAAAD@HCMC??BBBA@CI@AD@?CACEBAABAB?FCAA","ooafb@}phFC^BB@I@?ABFCBD@CHN@Cd@|@??BDQVHTFZNKDx@E@D`@BADh@FfCD?DfDBC?B@??@C?@VBT@@HEDEDNJrAADABBLBA@@b@xACDDLBCLf@BEDCNGDENX?DDLBVD@@HCFFH@?@C@@BN?JDV@?@FDDDN?J?PBL@LHd@FL?D@D??@?HRH?FFDLADBDBL@PBPA?@FFE@@Ff@D^?H?@A?Cv@EB@@KFCF@B?JB@@BAHC??L@@AF@@@A?DBAFFBEB@B^@RFNAD?BDJ@CFBBD?@A@@@DDDADBDHD@BCDF@E@?DDBHCF?@DA@POLADWB?BJ@@BFd@@@?FPIBE@@BLB@HL?B@BB@B?@F?FAACBANCB@NABKjBENEZHFDL@A@@A@Zh@?JBMFBBFAFAFEB@@_AtLWxEq@JcDlD?AAI@m@@?@C@?@AAC?CCC@AACA??BAE?BAACB?ACFAFA?ABU?KIIAE@EC@CNUJ@DCRCAcCB??EFA?C@@@Id@L?CLC@MDABKBY?M??@DB@C@@D@C@@ACBE?ICG@m@QC?EEAHwEB?@Og@G?I_@??GE?Cc@GI?G@A@MlBV@sKCA?DC?OCAEEC?GUM?GA?A?GDUK?C@@@SAAACL{@VL@D@@H@HB@BFCDF@?@CACQIAGGEIAA@SKAC??TcBACBWEQAAEG@EACA@KU?I@KAUHMHP?EHG@GBALa@AIGI?CA@EAGECk@A??MF[??BW???CCA@AAAAGCKEG@AK]OLAG?ELM[oAABAAAE@CAA??@AAAABA@CEA?AE?AEOA@AA@EEKCA@CY_AcALEC?KBE`AM?EOB?GCCC??AA?AIB?ACG@?EAA@A?EAA?@[c@@AMMEMKc@CSIoA@CA?Ck@C@CIMCC@???A_@?YEUGSO@I??DKZHTBN??EJEZ@?S@C???a@[KEEDAXHBEAk@C@EW?EFCAQKc@AEMHEU?C?@AAKHOOAAd@]Ig@s@h@CS@??Mh@_@c@uBEOAAD]_@W@AIGM|@GCKl@IBeB}@A]@CLB|@d@JW@YY@ACAAAI?Ag@WCGCAC?CICBEE@Q@CA?@MbAh@FQw@{ABGJK~@fBHHNFB@?CEG?Ek@gA?A?AA?GQIOU[?AIU?AYu@CB?A@EAAQX@CEMNUIW@AGSA?CMKJCFKJCQX]Qy@C?WZEMZc@WgAA??CST@BA?AAEFAG?CDGAAHIFK?IOk@A?KNK]NY?CCEECGMEEA@AAEGSU[SA@?CAAE\\IE@IECP{@Hk@HFCHHD@IDBGj@??@?^X?CFD?DFDABRPA@LP@ABBDG?E@OFIDJ?JBFB@?F?LDp@@J|@|D?@@J??Lh@bAlC@?CE@AZODXSXFPpA~ADQFBBH","iwifb@i|hFLC?EAAMB?@?B@@","iucfb@erhFJJDH??GGIM","iiefb@_uhFAIGM?B@BDN@?","ogseb@{ihF@LFEDDD?@@DF?DABCBE?KMC@GDAGCYDE@@BD","oylfb@qcgFB@@BAFC@@FAFGHGA@DC??@CA@AAAAAA@CCC??@IEC@EA?DEECB?CA?ABAB@HA@?CECAEGC?AA@CI@]J@BBHBFAZBLIHABB","oyjfb@wdiFFIBiA@S@CDED?JFD??ACGOEKDA?CIKUgAoAIGCAEGCGCMACAOKu@?[@]CiBASGm@Oo@Is@AIGQA[CWEIKQIi@Ca@EgCGu@KsAKkAGiBAk@G_AAm@GmA?aABg@AM?SAU?ODY@WGsAI]ASGo@Bg@AM?EEWW_@AMBQCUWq@Ms@E]A@ACGg@@EAK]_ACMAYCmAAg@?mABm@Hy@B_@AKMY?G?KBUNu@?M?MCMAKAAC[CEA@Hr@@@BPALCF?@Ml@AR?N@FHXBPKz@EbA?jABx@@~@Dd@Pl@HRBPAH?DBL@BBF??BL?F@JHXH\\Pf@DJ?HCPBNVd@DX?PCN@ZD\\@XJ`@@V?VB\\?TG^?J?P@HAN@R?D?HAH?N?z@FnA@j@Fl@@bADdA@H??@\\DZNzBBVBXB|@@nAB`@F^BJD@DFBN@F?X@JHXHp@Nx@Hh@@N?bABd@An@@THn@@XDNJRF@DD~@fALPBJ?^CnA","o{peb@k`gFF?DEFB@DCDIEEBCG","o}}eb@yrhFIiASOEK?S@a@SGCE?EGOAc@UBKIOa@CFGBC??IB?JIFDHZ@DD@DAD?JAB@BL@\\BJ@@TJ?B@LCf@?DVR@@L`B@LCVEd@CHMPGRQXCER]DOLO@EBc@@A@I@SBAAQAGC@","ocbfb@yzhF?IA??|@\\pDA@I`A?FBH@O?AJcAAM??KwAE@KkAAK?i@??","o}heb@qriFHAP?\\MLCDC@EBAXKNCp@[HGFI?AOLi@Vw@TMJe@PU?UDy@@c@F]Zo@v@@B@A\\a@LQ`@_@\\E|@ALC","ootfb@cbgFGDA??K@ICG?AJGB?ANBBC@?FAB","ocveb@{lhFBADBBAB?@BBAB@?BA@?AGAAACDCAIBGCAC@E@?F@","oqjfb@mkhF?B[GMGIAMK?D?@AA@C?AMAGCe@Eg@MGCr@NZBF@DBH?LHNDJFZD","ouwfb@klhFb@?d@CP?HEL?f@SPCHELAF?ZLF@?Ac@OG?M@KFO@e@P?G?FQ@GDE?AC?BC??C?BoAD","omifb@_mhFA@@T?DGZSCA@PBD?F[A_@","oghfb@ymhFQMQb@ABA@A?AG@AB@FQJSPL?B","ooseb@mfhF?FAH?@AEC??CBA@IB?A@","owueb@ejhFBFDD?DGBIEAC?EBCDC","okseb@okiF[PoA~@s@^YHa@GAIBEAACB@JODSHEHELSTE@m@EgA`@k@LQ@WMOM}@}@A@z@|@PNTJ@DBrA?pE@??I?H???kA?wB?AAwA@IJ?fAYd@UFAh@DF?NMFIFUVMVCXF`@Mr@_@`@]n@c@jAs@n@c@NQ?AQNo@d@w@d@","owueb@odhFA@?ECM?G@A@H@P","oaueb@ifhFAEEA?CFA@@AB@??HA??A","osteb@slhFDBG@GAGG?AB?@BJ@","oytfb@m}gFED?DFDD?HILBFAFIB@BADIFMBC?IG@GFG?MJM@IHKB"],"R":{"m":["qlfb@usiFPhBCz@]~AMxAo@nBIl@ZhCVjAUsAe@Sb@\\TAvCoE|@s@d@CNOST_@?aCoEYaAYoC","}cfb@{{gFCg@[wAI_EIk@iBkEuA}Ag@iACaAc@uBDsAAcAm@}DH}@h@aBLgBb@}AB{@SkBPpBZbAdCrE\\By@Ti@`@iCnEwBy@n@TVKD_@KoA","cffb@igiFXUOTa@H","creb@kviFkBtDm@xCs@|@dFwDnFeC","mieb@}siF}FjCaFvDr@k@RiBR}@nByD","}cfb@{|gF[yAMoEQ}@cBwD}@cA}@_BCaASmACqD","iefb@_hiF`@a@zCh@fAEtC{@","qxeb@}iiFgCx@sAFyCk@c@`@","_kfb@ohiF]W_@NMODaA\\uA","ilfb@}miF]rAE`ALP`@OXT","qvfb@cciFfDfA","qofb@i`iF_HuB","kofb@adiFDvAETUFc@U"],"t":["qmeb@migFgAe@}@oCcAGw@{@iD_GkAuFWaH]cEi@sA{Aw@Wa@mCeKc@kCu@sAy@k@qABcDeBq@IsBy@w@AwBf@","_{fb@ioiFdEdAlDhBjA?z@h@d@p@Nb@v@pEtBvHXb@xAv@h@nA^pET|GtA|FbCnE`AlATPl@CRJ~@nC`Br@jAhA","sseb@oogFcAR{HxEW|@DzBO_ByAmB[cAQsASgGFu@^sAJ{@","g|fb@{{fFjANnCo@pAFpBhA~EzDr@Fh@i@pAaDl@_@R_@R_DGqCPu@fIaFpBE","a`fb@abgF?_AKg@yAgB_@iAQqASgGJcA`@yA@gA","ebfb@{fgFj@RTe@dAo@","a`fb@qsfF_Al@q@CaB_A{@QsEqD{BkAiAEwBh@","}}eb@aigF{@Zc@|@q@c@","e`fb@gbgFSvDaA~@oA|Co@^eAS","a`fb@esfFHJFUIKGTwAf@}BgA_AS","aqeb@smgFQo@QK"],"p":["mefb@yffFtBmDt@{CHaBSmE?qB","iweb@smhFnAHl@l@fCzDp@X","yleb@aehFgA]iC_Ek@m@sAM","m`fb@a`gFOx@Ct@d@bF@z@G~@}@nDsBhD"]},"P":["{dfb@mthFCI","udfb@sthFCK","odfb@{thFEK","kdfb@auhFCK","sdfb@quhF?I","_efb@muhF@G","cefb@muhF@E","qreb@y{fF^Y","ereb@w{fFAI","_reb@y{fFAK","{qeb@}{fFAK","uqeb@a|fFAK","oqeb@g|fFAI","wxeb@wqgFDLJS","uxeb@argFFN","gxeb@eqgFN\\@A?A","axeb@eqgFDE","kgfb@cwhFKWGJ","{gfb@}whFEH","{dfb@ouhF@G","{teb@_hgFLh@F`@","_ueb@kcgFOwA","cueb@cdgF?AE]","oteb@wcgFCO?@","iteb@_ggFEB","}web@iqgFCK","cxeb@kqgFBC","iyeb@mtgFBIEGCF","gzeb@oogFBGBF","wxeb@imgFPh@","wxeb@elgFHM","sqeb@ktfFCF","iyeb@gngFBJ","yifb@s|hFBAFCB??@","i|eb@uygFIB","syeb@qngF@G","qyeb@ongF@G","qyeb@mngF??@I","_afb@ahhFBL","q`fb@ighFCK","eafb@{ghFBL","kafb@ughF@L","k`fb@k|gF@KCK","mdfb@ouhFAM","wdfb@yuhFHC","{dfb@mthFRW","wpeb@}tfFKC","{peb@_tfFEC","upeb@sufFKC","ypeb@etfFGG?G","creb@_zfF@F","greb@azfF@J","qreb@}yfF@L","kreb@{yfF@F","kueb@uhgFHO","uueb@_igFJa@","iueb@iigFDK","}teb@khgFAK","m`fb@ydhFPO?ASN@@","ipfb@wfiFGC","gafb@wfhFTQ","_~eb@evgFBD?ALEDD@K@?DD?AAA@E?Aa@L","e~eb@uvgF?@@@?AZK?C]L","o~eb@_xgF?@\\U?AGB?CQL@BEB","{qeb@uyfFe@X?@d@W?C","}qeb@{yfFYPASA?BTZQAA","cxeb@}qgF?@????@B@GAAAB","axeb@{`gFLT@C]k@?@JT?@@?","{veb@mzfFA@DLADJD?CACEAEQ","uweb@uzfFAAAFCCA@ABJD?AAE@E","kxeb@gxfF?CIE?@??AC@?JF?BA?","oteb@wcgFOJ@D?ELG?A?A","gbfb@glhFDNNJ@D@ABD?AAG??B@@FBE@??Ag@]","sgfb@wvhF@E","cxeb@mjgF?@HG@?@D?AGUA@DF?DIF","eweb@qegFMG@@BBCH??DGD@?A","affb@knhFB????B@??C?GA??@???@E?@B","uveb@o~fF?@@?BD?@?@@CEE?AA?","k}eb@k|gFFj@@?Gk@A?","_qeb@msfFEGA@FF?A","{ffb@auhF?ACGA@DF","c}eb@q|gFBP@?CQA?","cbfb@gmhFJD?Ce@Y?BXR","s_fb@kdhFC@AABC@B","g_fb@s_hF?BB?@B???EEA","cweb@k{fFMGAJ??BGFD@H@K","greb@e{fFMAKFBT?ACQJGNBAC","amfb@weiFWQ","gpfb@cgiFICRJBDPH@?AA_@U","cofb@egiF@BHDICUOYQVN@?RJ","{ofb@ggiFC?WOr@b@BAB@_@S","sueb@kfgFCW","safb@oghFRQ","yveb@u~fFBD","yveb@u~fF?A[_@?BLN?BJL@C","e}eb@}qgFAM","_}eb@_rgF?M","w|eb@argFAK","y{eb@grgF?K","o{eb@grgF?M","c|eb@ergF?K","k|eb@crgF?K","m{eb@grgFAM","q_fb@{whF?AFB","i~eb@gwgF\\UAA]T@@","kdfb@cshFGI","}pfb@agiF@G","eafb@akhFDJEK","{gfb@uwhFFL","mjfb@a|hFAG","wjfb@{{hFDG","ujfb@s{hFAG","ygfb@cphFDD?CCA@EA?AD","czeb@_tgFA@@B@AAC","gzeb@ctgFAE","gzeb@ctgFAG","gzeb@ctgFAG??@F","qgfb@cphFCA?AD?G??BD?","}gfb@iphFBBA@AABB?C?ACA","ggfb@oohF@E@?AFAA","amfb@weiFUO@EADAAVP","adfb@qlhF?E??A@@D?A"]};
+const KAJER = [{"id": "K001", "namn": "Röda Sten, betongkaj vid konsthallen", "omrade": "Klippan, Majorna", "kategori": "ÄK", "lat": 57.6896, "lon": 11.903, "agare": "Göteborgs Stad (exploateringsnämnden)", "forvaltare": "Stadsmiljöförvaltningen", "klass": 4, "avstangd": "Ja, sedan 2019", "status": "Upprustning, klar tidigast sommaren 2028, tidplanen osäker", "planer": "Ej kontrollerad", "kvarter": "Klippans kulturreservat, Röda Sten konsthall", "kostnad": "Ej publicerad", "kalla": "https://goteborg.se/wps/portal/start/goteborg-vaxer/hitta-projekt/stadsomrade-centrum/majorna-linnestaden-haga/roda-sten---upprustning-kajer", "kvalitet": "B", "anmarkning": "Avspärrad på grund av bristande underhåll, trädäck rivet", "lage": "avst", "sklass": "C", "atgard": "Reinvestering", "prio": "P1", "motiv": "Avstängd sedan 2019, del av Klippans kulturmiljö och konsthallens entré mot vattnet", "nasta": "Följ upprustningen, klar tidigast 2028"}, {"id": "K002", "namn": "Pålkaj vid Sockerbruket", "omrade": "Klippan, Majorna", "kategori": "ÄK", "lat": 57.6915, "lon": 11.908, "agare": "Göteborgs Stad (exploateringsnämnden)", "forvaltare": "Stadsmiljöförvaltningen", "klass": 4, "avstangd": "Ja, sedan 2021", "status": "Upprustning i samma projekt som Röda Sten", "planer": "Ej kontrollerad", "kvarter": "Sockerbruket, Klippan", "kostnad": "Ej publicerad", "kalla": "https://goteborg.se/wps/portal/start/goteborg-vaxer/hitta-projekt/stadsomrade-centrum/majorna-linnestaden-haga/roda-sten---upprustning-kajer", "kvalitet": "B", "anmarkning": "Avspärrad på grund av bristande underhåll", "lage": "avst", "sklass": "C", "atgard": "Reinvestering", "prio": "P1", "motiv": "Avstängd sedan 2021, kulturmiljö vid Sockerbruket", "nasta": "Pröva om slänt eller lägre konstruktion räcker där ingen båt ska lägga till"}, {"id": "K003", "namn": "Majnabbe", "omrade": "Majorna", "kategori": "HK", "lat": 57.6958, "lon": 11.916, "agare": "Göteborgs Hamn AB", "forvaltare": "Göteborgs Hamn AB", "klass": null, "avstangd": "Nej", "status": "Stenas Kielterminal flyttad enligt avtal 2016, nämnd som möjlig ersättningskaj för kryssning", "planer": "Ingen aktuell plan hittad", "kvarter": "Majnabbe, Stena", "kostnad": "", "kalla": "https://www5.goteborg.se/prod/intraservice/namndhandlingar/namndhandlingararkiv/samrumportalarkiv.nsf/93ec9160f537fa30c12572aa004b6c1a/c12581b5003f5a73c1257f9b004d0a66/$FILE/TU.pdf", "kvalitet": "C", "anmarkning": "Ägare antagen, ska verifieras", "lage": "okant", "sklass": "A", "atgard": "Ingen bedömning (hamnens bestånd)", "prio": "P4", "motiv": "Göteborgs Hamns bestånd, möjlig ersättningskaj för kryssning", "nasta": "Hamnens kajer ingår inte i bedömningen"}, {"id": "K004", "namn": "Stigbergskajen", "omrade": "Masthugget", "kategori": "HK", "lat": 57.7006, "lon": 11.936, "agare": "Göteborgs Hamn AB (kryssningskaj)", "forvaltare": "Göteborgs Hamn AB", "klass": null, "avstangd": "Nej", "status": "Spårvägstunnel Lindholmen till Linnéplatsen river och återställer cirka 30 m kaj, byggtid cirka 2032 till 2038", "planer": "Spårvägstunneln, samråd SBN 2026-02-24", "kvarter": "Stigberget, Masthugget", "kostnad": "Tunneln cirka 6,4 mdkr totalt", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=56479", "kvalitet": "B", "anmarkning": "Minst 80 procent av kryssningsanlöpen bedöms försvinna under bygget", "lage": "okant", "sklass": "A", "atgard": "Ingen bedömning (hamnens bestånd)", "prio": "P4", "motiv": "Kryssningskaj, påverkas av spårvägstunneln 2032 till 2038", "nasta": "Hamnens kajer ingår inte i bedömningen"}, {"id": "K005", "namn": "Masthuggskajen, ny halvö och kaj", "omrade": "Masthugget", "kategori": "UK", "lat": 57.7012, "lon": 11.947, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen efter överlämning", "klass": 1, "avstangd": "Nej, byggarbetsplats", "status": "Grundläggning klar kv 1 2026, påseglingsskydd byggstart aug 2026, överlämning 2028, området klart cirka 2031", "planer": "Detaljplan Järnvågsgatan", "kvarter": "Masthuggskajen, Elof Hansson, Stena Fastigheter, Balder, NCC, Riksbyggen", "kostnad": "Exploateringsbidrag 1 470 mnkr (2017), stadens projektbudget 2 340 mnkr, påseglingsskydd 157 mnkr", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/01133B6B136EB533C1258BCE0049B101/$File/15_EXN241118.pdf", "kvalitet": "A", "anmarkning": "Konstgjord halvö på mycket djup lera", "lage": "bygg", "sklass": "C", "atgard": "Underhåll", "prio": "P4", "motiv": "Ny kaj och halvö, finansierad med exploateringsbidrag", "nasta": "Bevaka att drift och underhållsansvar regleras vid överlämningen"}, {"id": "K006", "namn": "Rosenlundskanalen", "omrade": "Södra Älvstranden, Rosenlund", "kategori": "KM", "lat": 57.703, "lon": 11.9545, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Nej", "status": "Port i kanalen ingår i KF:s planeringsbeslut om högvattenskydd 2025-11-27, vattendomssamråd om kanalmur pågår", "planer": "Ingen ny plan hittad", "kvarter": "Rosenlund, Fiskhamnen", "kostnad": "Ingår i högvattenskyddet, högst cirka 2 mdkr totalt", "kalla": "https://www4.goteborg.se/prod/Intraservice/Namndhandlingar/SamrumPortal.nsf/0CA3B0A8994BC2F6C1258D420043DD50/$File/Handling_2025_nr_198.pdf", "kvalitet": "B", "anmarkning": "", "lage": "okant", "sklass": "D", "atgard": "Reinvestering", "prio": "P2", "motiv": "Kanalmur som bär stadsmiljön och blir del av högvattenskyddet med port", "nasta": "Samordna med högvattenskyddets port och vattendom"}, {"id": "K007", "namn": "Skeppsbron", "omrade": "Inom Vallgraven", "kategori": "UK", "lat": 57.7045, "lon": 11.9555, "agare": "Göteborgs Stad (överförs från Södra Älvstranden 2026)", "forvaltare": "Stadsmiljöförvaltningen", "klass": 2, "avstangd": "Nej", "status": "Garaget stoppat 2023, ny detaljplan utan garage, genomförande 2029 till 2034", "planer": "Dp 1480K-II-5156 (2015), ny plan under arbete", "kvarter": "Merkurhuset, Skeppsbroplatsen", "kostnad": "Förgäveskostnader 354 mnkr, påseglingsskydd 157 mnkr, överlåtelse 133 mnkr", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/0DA01D40040DC2D3C1258C2200360B03/$File/TU.pdf", "kvalitet": "A", "anmarkning": "Ingen akut risk vid nuvarande användning men befintlig kaj behöver renoveras", "lage": "still", "sklass": "C", "atgard": "Ny kaj", "prio": "P2", "motiv": "Ny plan med kajkanten som högvattenskydd och kajstråk", "nasta": "Följ planarbetet, påseglingsskyddet klart 2027"}, {"id": "K008", "namn": "Stenpiren", "omrade": "Inom Vallgraven", "kategori": "PI", "lat": 57.706, "lon": 11.9566, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 1, "avstangd": "Nej", "status": "Klar i etapp 1 av Skeppsbron (spårväg och resecentrum)", "planer": "Dp Skeppsbron etapp 1 (2012)", "kvarter": "Stenpiren resecentrum", "kostnad": "", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/1D851DC84482F72CC1258AE700381DA2/$File/1.%20PM%20Ny%20DP%20Skeppsbron%20231222.pdf", "kvalitet": "B", "anmarkning": "Färjeläge för Älvsnabben", "lage": "god", "sklass": "B", "atgard": "Underhåll", "prio": "P4", "motiv": "Färjeläge och resecentrum, nybyggt", "nasta": "Normalt underhåll"}, {"id": "K009", "namn": "Packhuskajen", "omrade": "Inom Vallgraven", "kategori": "ÄK", "lat": 57.7085, "lon": 11.961, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Delvis under ombyggnad", "status": "Etapp 1 klar 2021, etapp 2 huvuddel 3 byggstart 2026, hela kajen med älvkantsskydd klar 2029", "planer": "Packhusplatsen planläggs", "kvarter": "Kajskjul 8 och 8½ (Higab), Packhusplatsen, Operan", "kostnad": "Etapp 2 huvuddel 3 cirka 190 mnkr (2023)", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/D6A347A2F96FD454C1258998004EFB8E/$File/17%20Tjansteutlatande%20Genomforandebeslut%20Packhuskajen%20etapp%202%20huvuddel%203.pdf", "kvalitet": "A", "anmarkning": "600 m kaj från 1860 talet, kraftigt eftersatt, odokumenterad grundläggning", "lage": "bygg", "sklass": "C", "atgard": "Reinvestering", "prio": "P2", "motiv": "Kaj från 1860 talet, kraftigt eftersatt, ombyggnad finansierad till 2029", "nasta": "Följ etapp 2, samordna med Packhusplatsens plan"}, {"id": "K010", "namn": "Lilla Bommens hamn", "omrade": "Lilla Bommen", "kategori": "ÄK", "lat": 57.7114, "lon": 11.9655, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Nej, men östra kajen kan behöva stängas inom fem år", "status": "Ombyggnad med högvattenskydd, detaljprojektering 2025, byggstart planerad 2026", "planer": "Ej kontrollerad", "kvarter": "Barken Viking, Lilla Bommen, Göta älvbron", "kostnad": "Cirka 345 mnkr (2024)", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/608B6742B04EDD8DC1258C9D0028AF75/$File/21.%20Tjansteutlatande%20Inriktningsbeslut%20gallande%20atgard%20Lilla%20Bommens%20hamn%20ombyggnation%20av%20kaj.pdf", "kvalitet": "A", "anmarkning": "Östra kajen har passerat sin livslängd, västra och södra inom tio år", "lage": "skada", "sklass": "B", "atgard": "Ny kaj", "prio": "P1", "motiv": "Östra kajen kan behöva stängas inom fem år, gästhamn och fartyg", "nasta": "Beslut om ombyggnad med högvattenskydd, cirka 345 mnkr"}, {"id": "K011", "namn": "Stora Hamnkanalen, kanalmurar", "omrade": "Inom Vallgraven", "kategori": "KM", "lat": 57.7063, "lon": 11.968, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Nej", "status": "Kanalmursprogrammet i fem delsträckgrupper till cirka 2043, delsträckgrupp 1 (Packhusplatsen, Norra Hamngatan) byggstart 2027", "planer": "Ej kontrollerad", "kvarter": "Nordstan, Inom Vallgraven, Norra Hamngatan, Södra Hamngatan", "kostnad": "Program 4,5 till 5 mdkr (2020), delsträckgrupp 1 280 mnkr (2024)", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/818B6175A338C442C12589910047B005/$File/Handling_2023_nr_61.pdf", "kvalitet": "A", "anmarkning": "Röta i rustbädd och pålar, sättningar, risk för ras går inte att förutse", "lage": "skada", "sklass": "D", "atgard": "Reinvestering", "prio": "P1", "motiv": "Kanalmur med röta och sättningar, risk för ras går inte att förutse", "nasta": "Delsträckgrupp 1 byggstart 2027, mät övriga sträckor"}, {"id": "K012", "namn": "Fattighusån, kanalmurar", "omrade": "Nordstaden, Gullbergsvass", "kategori": "KM", "lat": 57.7066, "lon": 11.979, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Nej", "status": "Ingår i kanalmursprogrammet", "planer": "Ej kontrollerad", "kvarter": "Nordstan, Centralenområdet", "kostnad": "Ingår i programmet 4,5 till 5 mdkr", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/818B6175A338C442C12589910047B005/$File/Handling_2023_nr_61.pdf", "kvalitet": "B", "anmarkning": "Läge ungefärligt", "lage": "skada", "sklass": "D", "atgard": "Reinvestering", "prio": "P2", "motiv": "Kanalmur i kanalmursprogrammet", "nasta": "Läge och skick ska verifieras"}, {"id": "K013", "namn": "Vallgraven, kanalmurar", "omrade": "Inom Vallgraven, Kungsparken", "kategori": "KM", "lat": 57.703, "lon": 11.969, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Nej", "status": "Del av stadens cirka 3 km kanalmurar", "planer": "Ej kontrollerad", "kvarter": "Kungsparken, Inom Vallgraven", "kostnad": "Ej känd", "kalla": "https://goteborg.se/wps/portal?uri=gbglnk%3A2022101914576617", "kvalitet": "C", "anmarkning": "Skick ej kontrollerat, läge ungefärligt", "lage": "okant", "sklass": "D", "atgard": "Underhåll", "prio": "P3", "motiv": "Kanalmur i stadsmiljö, skick okänt", "nasta": "Begär inspektionsdata"}, {"id": "K014", "namn": "Kanalmur Åvägen, Mölndalsån", "omrade": "Gårda, Heden", "kategori": "KM", "lat": 57.7035, "lon": 11.9893, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Nej", "status": "Ombyggnad 2025 till 2029, Ullevibron till Valhallabron", "planer": "Ej kontrollerad", "kvarter": "Åvägen, Ullevi, Valhallagatan", "kostnad": "182 mnkr (2018), motsvarar 255 mnkr (2024), budget ökad 35 procent", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/6901BC2CDA15B366C1258C49003842E1/$File/27.%20A%20Reviderat%20genomforandebeslut%20for%20Kanalmur%20utmed%20Avagen%20fran%20Ullevibron%20till%20Valhallabron.pdf", "kvalitet": "A", "anmarkning": "Sättningar, passerat teknisk livslängd, översvämningar. Läge ungefärligt", "lage": "bygg", "sklass": "D", "atgard": "Reinvestering", "prio": "P2", "motiv": "Ombyggnad pågår 2025 till 2029, budget ökad 35 procent", "nasta": "Följ utfallet, använd som referens för löpmeterpris"}, {"id": "K015", "namn": "Gullbergs kaj, Kajparken", "omrade": "Gullbergsvass", "kategori": "ÄK", "lat": 57.716, "lon": 11.9745, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen, P bolaget upplåter parkering", "klass": 3, "avstangd": "Nej", "status": "Besiktning nov 2024 gav cirka 10 år kvar av teknisk livslängd, val mellan reinvestering och ny kaj med park", "planer": "Kämpegatan till antagande SBN 2025-06-17", "kvarter": "Gullbergsvass, Kämpegatan, pendelcykelstråk", "kostnad": "Reinvestering 150 till 190 mnkr eller ny kaj och park högst 450 mnkr", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/92102BA7D9160B25C1258CA7003D5228/$File/Tjansteutlatande.pdf", "kvalitet": "A", "anmarkning": "Cirka 500 m pålkaj från 1930 talet. Exploateringsbidrag går förlorade om parken inte påbörjas senast 2035", "lage": "skada", "sklass": "E", "atgard": "Ersätt med slänt eller skydd", "prio": "P1", "motiv": "Cirka tio år kvar, ingen fartygsfunktion, beslut krävs före 2035", "nasta": "Jämför slänt eller lägre skydd mot ny kaj för högst 450 mnkr"}, {"id": "K016", "namn": "Gullbergskajen, Drömmarnas kaj", "omrade": "Gullbergsvass", "kategori": "ÄK", "lat": 57.7183, "lon": 11.98, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen, upplåten till Fartygsföreningen Gullbergskajen", "klass": null, "avstangd": "Nej", "status": "Cirka 50 fartyg längs cirka 600 m, strukturutredning Gullbergsvass jan 2026 tar inte ställning till kajens framtid", "planer": "Strukturutredning Gullbergsvass 2026", "kvarter": "Gullbergsvass, Fartygsföreningen", "kostnad": "Ej känd", "kalla": "https://www4.goteborg.se/prod/Intraservice/Namndhandlingar/SamrumPortal.nsf/5AACF62E572E83E2C1258DA3003391B7/$File/PM%20%20Overgripande%20utredning%20avseende%20struktur%20och%20genomforbarhet%20Gullbergsvass.pdf", "kvalitet": "B", "anmarkning": "Gränsen mot Gullbergs kaj (K015) ska verifieras", "lage": "okant", "sklass": "B", "atgard": "Reinvestering", "prio": "P2", "motiv": "Kulturhistoriska fartyg kräver kaj, skick okänt", "nasta": "Begär inspektion, pröva förvaltningsavtal med fartygsföreningen"}, {"id": "K017", "namn": "Gasverkskajen", "omrade": "Gullbergsvass", "kategori": "UK", "lat": 57.7192, "lon": 11.984, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Delvis, olovliga konstruktioner röjda 2022 och 2024", "status": "Högvattenskydd planeras längs älven, Göteborg Energis ackumulatortank 2026 till 2027", "planer": "Strukturutredning Gullbergsvass 2026", "kvarter": "Gasklockans tidigare plats, Göteborg Energi", "kostnad": "Ej känd", "kalla": "https://www.svt.se/nyheter/lokalt/vast/gasverkskajen-vid-drommarnas-kaj-hotad-av-rivning", "kvalitet": "B", "anmarkning": "Kajens tekniska skick anges inte i hittade källor", "lage": "okant", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P3", "motiv": "Framtid beror på strukturen för Gullbergsvass och högvattenskyddet", "nasta": "Säkra, inga större investeringar före beslut"}, {"id": "K020", "namn": "Färjenäs", "omrade": "Färjenäs, Hisingen", "kategori": "ÄK", "lat": 57.6925, "lon": 11.899, "agare": "Ej kontrollerad", "forvaltare": "Ej kontrollerad", "klass": null, "avstangd": "Ej känt", "status": "Ingen aktuell plan eller kajuppgift hittad", "planer": "Ej kontrollerad", "kvarter": "Färjenäsparken", "kostnad": "", "kalla": "", "kvalitet": "C", "anmarkning": "Läge och ägare ska verifieras", "lage": "okant", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P4", "motiv": "Uppgifter saknas", "nasta": "Verifiera läge, ägare och skick"}, {"id": "K021", "namn": "Pölsebokajen", "omrade": "Eriksberg västra", "kategori": "ÄK", "lat": 57.695, "lon": 11.9055, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 1, "avstangd": "Nej", "status": "Sista kajetappen enligt 2006 års avtal, byggd cirka 2019", "planer": "Dp II-4841 Västra Eriksberg (2006)", "kvarter": "Västra Eriksberg, Dockan, Backen, Platån, Kajen", "kostnad": "Kajer, bryggor, torg och park 67 mnkr (2005) betalt av exploatören", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=19675", "kvalitet": "B", "anmarkning": "Pålat betongdäck med dragstag och bankpålar. Läge ungefärligt", "lage": "god", "sklass": "C", "atgard": "Underhåll", "prio": "P4", "motiv": "Byggd omkring 2019, modern konstruktion", "nasta": "Normalt underhåll"}, {"id": "K022", "namn": "Eriksbergsdockan, Kulturhamnen", "omrade": "Eriksberg", "kategori": "UK", "lat": 57.6975, "lon": 11.9125, "agare": "Göteborgs Stad (dockans vattenområde)", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Nej", "status": "Kulturhamnen kräver dyra vågbrytare, planarbete norr om dockan avbrutet 2023", "planer": "Dp II-4841 (2006)", "kvarter": "Eriksbergs Förvaltning AB, Eriksbergskranen", "kostnad": "Ej känd", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=19675", "kvalitet": "B", "anmarkning": "", "lage": "okant", "sklass": "C", "atgard": "Underhåll", "prio": "P3", "motiv": "Kulturhamnen kräver dyra vågbrytare", "nasta": "Ta fram kostnad för vågbrytare och nyttjande"}, {"id": "K023", "namn": "Eriksbergs pirar (Dockpiren, Kvarnpiren, Pir 4, Pir 5)", "omrade": "Eriksberg", "kategori": "PI", "lat": 57.7003, "lon": 11.917, "agare": "Älvstranden, överförs till exploateringsnämnden", "forvaltare": "Stadsmiljöförvaltningen efter överföring", "klass": null, "avstangd": "Nej", "status": "KF beslut 2022 att Älvstranden inte ska äga kajer och pirar, fyra pirar på Eriksberg överförs till exploateringsnämnden", "planer": "Ej kontrollerad", "kvarter": "Eriksberg", "kostnad": "Ej känd", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=52852", "kvalitet": "B", "anmarkning": "Pirnamn enligt OpenStreetMap", "lage": "okant", "sklass": "C", "atgard": "Underhåll", "prio": "P3", "motiv": "Pirar som överförs från Älvstranden till staden", "nasta": "Säkerställ skick och budget vid överföringen"}, {"id": "K024", "namn": "Sannegårdshamnen västra", "omrade": "Sannegården", "kategori": "UK", "lat": 57.7045, "lon": 11.9245, "agare": "Göteborgs Stad och privata", "forvaltare": "Ej kontrollerad", "klass": null, "avstangd": "Ej känt", "status": "Detaljplan Västra Sannegårdshamnen kräver mark från Lidaverken, såld till staden 2025", "planer": "Dp Västra Sannegårdshamnen, Dp Regnbågsgatan (samråd 2025)", "kvarter": "Sannegården, Lidaverken", "kostnad": "Regnbågsgatan underskott cirka 100 mnkr", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=56340", "kvalitet": "B", "anmarkning": "Golvnivå minst +2,8 m och stråk minst +2,1 m i Regnbågsgatan", "lage": "still", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P3", "motiv": "Detaljplaner under arbete, underskott cirka 100 mnkr i Regnbågsgatan", "nasta": "Följ planerna, lås lägsta marknivå"}, {"id": "K025", "namn": "Lundbyhamnen", "omrade": "Lundby", "kategori": "UK", "lat": 57.703, "lon": 11.932, "agare": "Älvstranden Utveckling", "forvaltare": "Ej kontrollerad", "klass": null, "avstangd": "Ej känt", "status": "Utfyllnad stoppad, vattendomsansökan återkallad 2025", "planer": "Ej aktuell", "kvarter": "Lundbystrand", "kostnad": "Cirka 30 mnkr förlorade", "kalla": "https://www.svt.se/nyheter/lokalt/vast/goteborg-stoppar-utfyllnad-av-lundbyhamnen-30-miljoner-redan-investerade", "kvalitet": "B", "anmarkning": "Läge ungefärligt", "lage": "still", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P4", "motiv": "Utfyllnaden stoppad 2025", "nasta": "Klarlägg framtida användning"}, {"id": "K026", "namn": "Keillers kaj, Södra Lindholmen", "omrade": "Lindholmen", "kategori": "ÄK", "lat": 57.705, "lon": 11.9395, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 3, "avstangd": "Nej", "status": "Upprustad för färjeläge 2023, södra Lindholmen översvämmas vid högvatten och kajlinjen är i dåligt skick, plan för grönt älvkantsskydd", "planer": "Högvattenskydd Lindholmen (KF 2025)", "kvarter": "Lindholmen Science Park, Chalmers Lindholmen", "kostnad": "Ej känd", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=25540", "kvalitet": "B", "anmarkning": "Läge ungefärligt", "lage": "skada", "sklass": "E", "atgard": "Ersätt med slänt eller skydd", "prio": "P2", "motiv": "Södra Lindholmen översvämmas vid högvatten, grönt älvkantsskydd planerat. Färjeläget vid Keillers kaj är trafikkaj", "nasta": "Dela upp sträckan i färjeläge och omställning"}, {"id": "K027", "namn": "Lindholmspiren", "omrade": "Lindholmen", "kategori": "PI", "lat": 57.7058, "lon": 11.9432, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Nej", "status": "Färjelägen L1 till L4 för Älvsnabben", "planer": "Ej kontrollerad", "kvarter": "Lindholmspiren, Ericsson", "kostnad": "", "kalla": "", "kvalitet": "C", "anmarkning": "Färjelägen enligt OpenStreetMap", "lage": "okant", "sklass": "B", "atgard": "Underhåll", "prio": "P4", "motiv": "Färjelägen för Älvsnabben", "nasta": "Normalt underhåll"}, {"id": "K028", "namn": "Lindholmshamnen", "omrade": "Lindholmen", "kategori": "UK", "lat": 57.7068, "lon": 11.9405, "agare": "Göteborgs Stad", "forvaltare": "Stadsmiljöförvaltningen", "klass": 1, "avstangd": "Nej", "status": "Invigd 2025-05-20, cirka 640 bostäder", "planer": "Ej kontrollerad", "kvarter": "Fribordet (Älvstranden), Lindholmshamnen", "kostnad": "Kaj och torg 33 mnkr (2016) senare 69 mnkr, Fribordet bär 95 procent", "kalla": "https://goteborg.se/wps/PA_Pabolagshandlingar/file?id=31457", "kvalitet": "A", "anmarkning": "Livslängdskrav höjt från 50 till 100 år. Läge ungefärligt", "lage": "god", "sklass": "C", "atgard": "Underhåll", "prio": "P4", "motiv": "Ny kaj invigd 2025", "nasta": "Bevaka överlämning och driftbudget"}, {"id": "K030", "namn": "Frihamnen, inre delen och Jubileumsparken", "omrade": "Frihamnen", "kategori": "UK", "lat": 57.715, "lon": 11.957, "agare": "Exploateringsnämnden och Älvstranden, ungefär hälften var", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Delvis", "status": "Detaljplan etapp 1 stilla sedan 2017, nytt planprogram för Frihamnen och del av Ringön på samråd till 2026-09-29", "planer": "Planprogram Frihamnen och Ringön 2026, DP0 Polestar föreslås avbrytas", "kvarter": "Jubileumsparken, Hamnbadet, Hisingsbron", "kostnad": "Kajupprustning en av fem största skattefinansierade poster, belopp ej redovisat", "kalla": "https://www4.goteborg.se/prod/Intraservice/Namndhandlingar/SamrumPortal.nsf/5E5FEA1EBAD4A657C1258DFD004DD6DD/$File/103%20Planprogram%20Frihamnen%20och%20Ringon.pdf?OpenElement=", "kvalitet": "A", "anmarkning": "Cirka 4 500 bostäder på 25 till 30 år. Kajernas tekniska skick ej redovisat", "lage": "still", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P2", "motiv": "Kajupprustning en av de största skattefinansierade posterna i planprogrammet, belopp saknas", "nasta": "Dela upp kajerna i stadskaj och omställningskaj i planarbetet"}, {"id": "K031", "namn": "Frihamnen, yttre pirar och Bananpiren", "omrade": "Frihamnen", "kategori": "UK", "lat": 57.712, "lon": 11.952, "agare": "Göteborgs Stad och Älvstranden", "forvaltare": "Stadsmiljöförvaltningen", "klass": null, "avstangd": "Ej känt", "status": "Yttre pirar och kajkanter planeras långt senare, Bananpiren får tillfälliga användningar", "planer": "Planprogram Frihamnen 2026", "kvarter": "Frihamnen", "kostnad": "Ej känd", "kalla": "https://alvstranden.se/uppdaterat-planprogram-for-frihamnen-klart-for-samrad/", "kvalitet": "B", "anmarkning": "Läge ungefärligt", "lage": "still", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P3", "motiv": "Yttre pirar planeras långt senare", "nasta": "Säkra mot olyckor, tillfällig användning"}, {"id": "K032", "namn": "Ringön, älvkant", "omrade": "Ringön", "kategori": "UK", "lat": 57.7178, "lon": 11.969, "agare": "Göteborgs Stad, merparten upplåten med tomträtt till 2045", "forvaltare": "Ej kontrollerad", "klass": null, "avstangd": "Ej känt", "status": "Långsam organisk omvandling utan fast tidplan, del av planprogrammet för Frihamnen, ny Ringöbro", "planer": "Planprogram Frihamnen och Ringön 2026", "kvarter": "Ringön, Plejadgatan, Renova", "kostnad": "Ej känd", "kalla": "https://goteborg.se/wps/portal/start/goteborg-vaxer/hitta-projekt/stadsomrade-hisingen/ringon/om-ringon", "kvalitet": "B", "anmarkning": "Kajernas skick och ägare ej hittade", "lage": "still", "sklass": "F", "atgard": "Säkra och avvakta", "prio": "P3", "motiv": "Tomträtter till 2045, skick och ägare okänt", "nasta": "Klarlägg ansvar i tomträttsavtalen"}, {"id": "K040", "namn": "Fiskebäckshamn", "omrade": "Fiskebäck, utanför kartutsnittet", "kategori": "HK", "lat": 57.6455, "lon": 11.854, "agare": "Göteborgs Stad", "forvaltare": "Fiskebäcks Utvecklings AB bygger nya kajer på tomträtt", "klass": null, "avstangd": "Ej känt", "status": "Kostnaden steg från cirka 103 mnkr (2020) till 360 mnkr (2023), upp till cirka 740 mnkr vid strängare gränsvärden, detaljplanen pausad", "planer": "Detaljplan påbörjad 2022, pausad", "kvarter": "Fiskebäck", "kostnad": "360 till 740 mnkr", "kalla": "https://www4.goteborg.se/prod/intraservice/namndhandlingar/samrumportal.nsf/35334999125DF0A6C1258B35002226CD/$File/11_EXN240617.pdf", "kvalitet": "A", "anmarkning": "Kostnadsökningen beror främst på muddring av förorenade massor", "lage": "still", "sklass": "A", "atgard": "Ny kaj", "prio": "P2", "motiv": "Kommunal fiskehamn, kostnaden steg från 103 till 360 mnkr, detaljplan pausad", "nasta": "Pröva etappindelning och muddringsomfattning"}];
+const LAGE = {avst:"Avstängd",skada:"Allvarliga skador",bygg:"Ombyggnad pågår",still:"Plan står still eller är stoppad",god:"God eller ny",okant:"Skick okänt"};
+const KAT = {"ÄK":"Älvkaj","UK":"Kaj i utvecklingsområde","KM":"Kanalmur","PI":"Pir eller brygga","HK":"Aktiv hamnkaj","SK":"Strandskoning"};
+const ORDER = ["avst","skada","bygg","still","god","okant"];
+const KLASSN = {A:"Hamnkaj",B:"Trafikkaj",C:"Stadskaj",D:"Stödkonstruktion",E:"Omställningskaj",F:"Avvaktar plan"};
+const PRION = {P1:"Beslut behövs nu",P2:"Inom fem till tio år",P3:"Planerat eller data saknas",P4:"Bevaka"};
+const MODES = {lage:{field:"lage",order:ORDER,names:LAGE,tok:"--s-"},klass:{field:"sklass",order:["A","B","C","D","E","F"],names:KLASSN,tok:"--k-"},prio:{field:"prio",order:["P1","P2","P3","P4"],names:PRION,tok:"--p-"}};
+let MODE="lage";
+
+function dec(s){let i=0,la=0,lo=0;const o=[];while(i<s.length){const v=[];for(let k=0;k<2;k++){let r=0,sh=0,b;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32);v.push(r&1?~(r>>1):r>>1)}la+=v[0];lo+=v[1];o.push([la/1e4,lo/1e4])}return o}
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const map = L.map("map",{zoomControl:true,attributionControl:true,minZoom:12,maxZoom:18,zoomSnap:.25}).fitBounds([[57.6885,11.894],[57.7235,11.995]]);
+map.attributionControl.setPrefix(false);
+map.attributionControl.addAttribution("© OpenStreetMap contributors");
+
+const base = L.layerGroup().addTo(map);
+let waterLayers=[], landLayers=[], roadLayers=[], pierLayers=[];
+for(const s of VEC.W){const ring=dec(s.slice(1));const outer=s[0]==="o";const pl=L.polygon(ring,{interactive:false,weight:outer?1:0,stroke:outer});(outer?waterLayers:landLayers).push(pl)}
+waterLayers.forEach(l=>l.addTo(base)); landLayers.forEach(l=>l.addTo(base));
+for(const k of ["p","t","m"]) for(const s of VEC.R[k]){roadLayers.push(L.polyline(dec(s),{interactive:false,weight:k==="m"?2.4:k==="t"?1.8:1.2}).addTo(base))}
+for(const s of VEC.P){pierLayers.push(L.polyline(dec(s),{interactive:false,weight:1.6}).addTo(base))}
+
+const labels=[["HISINGEN",57.7135,11.928,"area"],["MAJORNA",57.6935,11.932,"area"],["CENTRUM",57.7025,11.975,"area"],["ERIKSBERG",57.7025,11.9085,"area"],["LINDHOLMEN",57.7095,11.9400,"area"],["FRIHAMNEN",57.7185,11.9545,"area"],["RINGÖN",57.7225,11.9750,"area"],["GULLBERGSVASS",57.7135,11.9850,"area"],["Göta älv",57.6985,11.9230,"water"],["Göta älv",57.7140,11.9700,"water"]];
+for(const [t,la,lo,c] of labels){L.marker([la,lo],{interactive:false,keyboard:false,icon:L.divIcon({className:"",html:`<div class="${c==="area"?"area-label":"water-label"}">${t}</div>`,iconSize:[0,0],iconAnchor:[40,8]})}).addTo(map)}
+
+function styleBase(){
+  const w=css("--water"),we=css("--water-edge"),land=css("--land"),road=css("--road"),pier=css("--pier");
+  waterLayers.forEach(l=>l.setStyle({fillColor:w,fillOpacity:tilesOn?0:1,color:we,opacity:tilesOn?0:1}));
+  landLayers.forEach(l=>l.setStyle({fillColor:land,fillOpacity:tilesOn?0:1}));
+  roadLayers.forEach(l=>l.setStyle({color:road,opacity:tilesOn?0:.9}));
+  pierLayers.forEach(l=>l.setStyle({color:pier,opacity:tilesOn?0:.8}));
+  document.querySelectorAll(".area-label,.water-label").forEach(e=>e.style.display=tilesOn?"none":"");
+}
+
+let tilesOn=false;
+const WMS="https://opengeodata.goteborg.se/services/";
+const test=new Image();
+test.onload=()=>{
+  const opt={format:"image/jpeg",version:"1.3.0",maxZoom:19,attribution:"Baskarta och ortofoto © Göteborgs Stad"};
+  const bas=L.tileLayer.wms(WMS+"baskarta/wms/v1",Object.assign({},opt,{layers:"baskarta",format:"image/png"}));
+  const orto=L.tileLayer.wms(WMS+"ortofoto/wms/v1",Object.assign({},opt,{layers:"orto_2025"}));
+  const enkel=L.layerGroup();
+  const bases={"Stadens baskarta":bas,"Ortofoto 2025":orto,"Förenklad karta":enkel};
+  bas.addTo(map);tilesOn=true;styleBase();
+  L.control.layers(bases,null,{position:"topleft",collapsed:true}).addTo(map);
+  map.on("baselayerchange",e=>{tilesOn=e.layer!==enkel;styleBase();document.getElementById("basemode").textContent=tilesOn?"Bakgrund: "+e.name+", Göteborgs Stad":"Bakgrund: förenklad karta ur OpenStreetMap"});
+  document.getElementById("basemode").textContent="Bakgrund: Stadens baskarta, Göteborgs Stad";
+};
+test.src=WMS+"ortofoto/wms/v1?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=orto&STYLES=&CRS=EPSG:3857&BBOX=1330000,7910000,1332000,7912000&WIDTH=8&HEIGHT=8&FORMAT=image/jpeg";
+
+const markers={};let active=new Set(ORDER);let selected=null;
+function color(l){return css("--s-"+l)}
+function mcolor(code,mode){return css(MODES[mode||MODE].tok+code)}
+function keyOf(k){return k[MODES[MODE].field]}
+for(const k of KAJER){
+  if(k.lon<11.88) continue;
+  const m=L.circleMarker([k.lat,k.lon],{radius:8,weight:2,fillOpacity:1,keyboard:true});
+  m.bindTooltip(`<span class="kaj-tip">${esc(k.id)} · ${esc(k.namn)}</span>`,{direction:"top",offset:[0,-6]});
+  m.on("click",()=>select(k.id,false));
+  m.addTo(map);markers[k.id]=m;
+}
+function styleMarkers(){
+  const paper=css("--paper"),ink=css("--ink");
+  for(const k of KAJER){const m=markers[k.id];if(!m)continue;
+    const on=active.has(keyOf(k));const sel=selected===k.id;
+    m.setStyle({fillColor:mcolor(keyOf(k)),color:sel?ink:paper,weight:sel?3:2,radius:sel?11:8,opacity:on?1:0,fillOpacity:on?1:0});
+    if(on&&!map.hasLayer(m))m.addTo(map); if(!on&&map.hasLayer(m))map.removeLayer(m);
+    if(sel)m.bringToFront();
+  }
+}
+
+function select(id,pan){
+  selected=id;const k=KAJER.find(x=>x.id===id);
+  document.querySelectorAll("tr.row").forEach(r=>r.classList.toggle("sel",r.dataset.id===id));
+  const c=color(k.lage);
+  const rows=[["Åtgärd",k.atgard],["Motiv",k.motiv],["Nästa steg",k.nasta],["Område",k.omrade],["Kategori",KAT[k.kategori]||k.kategori],["Tillståndsklass",k.klass?`${k.klass} av 4`:"Ej bedömd"],["Avstängd",k.avstangd],["Ägare",k.agare],["Förvaltare",k.forvaltare],["Status",k.status],["Planer",k.planer],["Kvarter intill",k.kvarter],["Kostnader",k.kostnad],["Anmärkning",k.anmarkning]].filter(r=>r[1]);
+  document.getElementById("panel").innerHTML=`
+    <div class="id">${esc(k.id)} · <span class="q" title="Kvalitetsnivå">${esc(k.kvalitet)}</span></div>
+    <h2>${esc(k.namn)}</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="pill" style="color:${c}"><span class="dot" style="background:${c}"></span>${esc(LAGE[k.lage])}</span><span class="pill" style="color:${mcolor(k.sklass,'klass')}"><span class="dot" style="background:${mcolor(k.sklass,'klass')}"></span>${k.sklass} ${esc(KLASSN[k.sklass])}</span><span class="pill" style="color:${mcolor(k.prio,'prio')}"><span class="dot" style="background:${mcolor(k.prio,'prio')}"></span>${k.prio}</span></div>
+    <dl>${rows.map(r=>`<dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd>`).join("")}</dl>
+    ${k.kalla?`<div style="font-size:13px"><a href="${esc(k.kalla)}" target="_blank" rel="noopener">Öppna källan</a></div>`:`<div class="empty" style="font-size:13px">Källa saknas, ska tas fram.</div>`}
+    <div class="id">${k.lat.toFixed(4)} N, ${k.lon.toFixed(4)} E</div>`;
+  styleMarkers();
+  if(pan&&markers[id])map.flyTo([k.lat,k.lon],Math.max(map.getZoom(),15),{duration:.6});
+  if(!markers[id]&&pan)document.getElementById("panel").scrollIntoView({block:"nearest"});
+}
+
+// Filter och teckenförklaring
+const fbar=document.getElementById("filters");
+const legend=L.control({position:"topright"});let legendEl=null;
+legend.onAdd=()=>{legendEl=L.DomUtil.create("div","legend");return legendEl};legend.addTo(map);
+function buildFilters(){
+  const M=MODES[MODE];active=new Set(M.order);
+  fbar.querySelectorAll(".chip").forEach(c=>c.remove());
+  for(const l of M.order){const n=KAJER.filter(k=>k[M.field]===l).length;const b=document.createElement("button");b.className="chip";b.setAttribute("aria-pressed","true");b.innerHTML=`<span class="dot" data-c="${l}"></span>${MODE==="lage"?"":l+" "}${M.names[l]} <span style="font-family:var(--f-mono);font-size:11px">${n}</span>`;b.onclick=()=>{active.has(l)?active.delete(l):active.add(l);b.setAttribute("aria-pressed",active.has(l));styleMarkers()};fbar.insertBefore(b,document.getElementById("basemode"))}
+  legendEl.innerHTML=M.order.map(l=>`<div><span class="dot" data-c="${l}"></span>${MODE==="lage"?"":l+" "}${M.names[l]}</div>`).join("");
+  paintDots();styleMarkers();
+}
+const bm=document.createElement("span");bm.className="basemode";bm.id="basemode";bm.textContent="Bakgrund: förenklad karta ur OpenStreetMap";fbar.appendChild(bm);
+for(const m of Object.keys(MODES)){document.getElementById("m-"+m).onclick=()=>{MODE=m;document.querySelectorAll("#modes button").forEach(b=>b.setAttribute("aria-pressed",b.id==="m-"+m));buildFilters()}}
+
+// Stats
+const cnt=l=>KAJER.filter(k=>k.lage===l).length;
+document.getElementById("stats").innerHTML=[
+  [KAJER.length,"kajer, kanalmurar och pirar i registret version 1"],
+  [cnt("avst"),"avstängda på grund av bristande underhåll (Röda Sten och Sockerbruket)"],
+  [cnt("skada"),"med allvarliga skador eller passerad livslängd"],
+  [cnt("still"),"där planen står still eller har stoppats"],
+  [KAJER.filter(k=>k.prio==="P1").length,"med prioritet 1 i den preliminära klassningen, beslut behövs nu"],
+  ["4,5 till 5 mdkr","kanalmursprogrammet till cirka 2043 (2020 års prisnivå)"],
+  ["354 mnkr","förgäveskostnader när Skeppsbrogaraget stoppades 2023"]
+].map(([b,s])=>`<div class="stat"><b>${b}</b><small>${s}</small></div>`).join("");
+
+// Table
+document.getElementById("rows").innerHTML=KAJER.map(k=>`<tr class="row" tabindex="0" data-id="${k.id}"><td class="mono">${k.id}</td><td>${esc(k.namn)}</td><td>${esc(k.omrade)}</td><td><span class="pill" style="color:var(--s-${k.lage})"><span class="dot" style="background:var(--s-${k.lage})"></span>${LAGE[k.lage]}</span></td><td><span class="pill" style="color:var(--k-${k.sklass})"><span class="dot" style="background:var(--k-${k.sklass})"></span>${k.sklass} ${KLASSN[k.sklass]}</span></td><td class="mono" style="color:var(--p-${k.prio})">${k.prio}</td><td>${esc(k.kostnad||"")}</td><td class="mono">${k.kvalitet}</td></tr>`).join("");
+document.querySelectorAll("tr.row").forEach(r=>{r.onclick=()=>{select(r.dataset.id,true);document.getElementById("map").scrollIntoView({behavior:"smooth",block:"nearest"})};r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();r.click()}}});
+
+function paintDots(){document.querySelectorAll(".dot[data-c]").forEach(d=>d.style.background=mcolor(d.dataset.c))}
+function repaint(){styleBase();styleMarkers();paintDots();if(selected)select(selected,false)}
+buildFilters();repaint();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",repaint);
+new MutationObserver(repaint).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+select("K010",false);
+</script>
+
+</body>
+</html>
