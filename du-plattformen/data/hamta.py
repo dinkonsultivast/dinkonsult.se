@@ -59,6 +59,8 @@ def overpass():
   node["man_made"="manhole"]{bb};
   node["kerb"]{bb};
 );
+out geom qt;
+relation["boundary"="administrative"]["admin_level"="7"]["name"="Kungälvs kommun"];
 out geom qt;"""
     for url in OVERPASS:
         try:
