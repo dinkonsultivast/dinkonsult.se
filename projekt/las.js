@@ -3,7 +3,7 @@
    Utan lösenordet går innehållet inte att läsa, inte heller i repot. */
 (function () {
   "use strict";
-  var SALT = "n8wxTFB/oo7KgQJpL2FQPQ==";
+  var SALT = "7gDqcA15BlxZaOPBy0XuIg==";
   var VARV = 600000;
   var NYCKEL = "dkiv.projekt.nyckel";
   var INLOGG = "/projekt/";

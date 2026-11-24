@@ -86,7 +86,7 @@
 
 <script>
 (function () {
-  var LISTA = "HqOI2AhMcuIJj8zA2nvtg20AOsgoKqSxyuypy5MGtYRPMu9OZHoAsehfU5sJbm+6gh1wJfLAW+JFOkIgk/SgeAD7hYnp/7zMyedxcCVbkPbxrvWJKUoesoC6M4TZuzj1X/S8pCy1M83vuREDcWTwcLpAUP5kWnTsJ8KPJnHQSh+PkKkVB2nE7wFq2hFFyREsBR3tLb9bYGxmVx6m2o69h1W5rR6cPhL2Tf+fuADda9G0Fg8M+fErBoK18nCo8Uykp79Ei9T6XsJVxEPdvdA36S+TMV46XDDCB6oowRKLkiwSJuhtmo46eajOk399LXszgY1h2t4E9PiTaPYdnUpy0bFRuJoL+hZnPhQMXmTMZfqU1cGW/CS5Rk+y/a+SoWiNNRgxixYBLlS2u+kh2AX8fo7JSrG+Sl6RfMy1uYVRab4dC7rkBT7BjlMqBHv9qLcgjf1L0PGA8hs4oXIvVHkjliqbsCam5312FILJkWrwDerLPlxe4+lwdZwvDU5vDDoOZUuq9ZVzLj+FT1xweMfGRA12e7FD2jevKz3Ns6APGechoHhi9ep4MmKoJbkZGbH5c3g7fOwkeZlmaohKXcbYt8Z9kzZBfWM4GN6p/n2HhUH5sYZjyi0h8RB5PouB6cc/gjYmRpxU8N7WLfLwa8ozJnponyaWBaPapiGHoFkLpaF6hYuNi/fFm+2y2YtxYeyPObXBrsAYBwmTCahtwq3VowA1uSqfEdefSWqdALg+33inA4cvouZR7ad3shqll5XCbBIG/PJz++9u4KoQQMaBfLN1DgCK1Fbjy2l+oZbbdZWx1Ec=";
+  var LISTA = "xqIvCs4hRmAIGehHU4C0eSkM6MMcaGC1DtF88v4OH/EtkPaG3qemJZmT1IIOW8J94NZ+UQy1VNPtuyvTv2/KnqaBadeIi25EIoeQLPb86jnmB2ul4iX3DfEOTbunXeKwlnE9AcS7OKMmvPvs21p5WqaeD4JGS6Q/J+31sGcTT7BM5c3u82tGZprxHTG04RG0PCkQKrKoosuPlWwQgNr1OM01Wd513Yo7+5Fb5QO3rVy3sxt4nJResVWGigNgKyhPjk5uhRSkdM8ayXLyqV94zfget7/G9NPTrZGf4g3NUMMvKxUdQ2zARuNfyHtz5RHNwpPr1Q1DvY0Dj+53E1vg5gTW8qCtxNsUa+N/Ydxbw/fW/3cpyXmRBJlGl0kpBZgRrlrlkEE5GT03XN/FxjBJIpQDkgLcMfs5bFvkQWty5tlwI1KZrrGR++44yxvoSm4264canVyzTZlVlKsbZhUMIB6LWvDVpLuOkxnex0OH0NzX5/+7exbS7gxx5A9wpVRA5Mam1pm8WMoy7Iof++mYhgfRdvhiuKmaUeCAlDtYwI2ieZkX/2SWG/di+UYKHrr/YDi+R9QEmE0+ViLTpGILpiNxUaU0F41uxJiZYZqwz31rZwV3G1mehjdBkh+30Y+Rf7knWAcTBUFlco78x2iJmWolmhrkoM6xTSZdPweW4CiDWI/T8pdUQeaDCaXAR3TOqn/g7ItVgWfXgL1anEBza6INEY3qDUAlG2KLV9QyzhKw/3QWpIcRgR/pvX2NXjCjqMhXS57QiGSh2rBg4EmVVlc3mid0ywSIrZe75iRt7lNAE6bJjKWAgn2H6EH+vbXbsdyztXYz7M4EvuHWVycPk+mj0u2b2GugbOtrWa+6G7+jtTZi/gD9JJZC/nD6GFIR+pUyblCb2WhGPbWH/7YNkGQfc3/xwNZTg/s0Bz/E3LqtA5QlL9JluzhCdmHJgBHg3tbnofgvzOV0I3WprSTbnilh4x9xyrre7nXw71iKNs9M";
   var $ = function (id) { return document.getElementById(id); };
   var till = new URLSearchParams(location.search).get("till");
   if (till && !/^\/[^/\\]/.test(till)) till = null;
@@ -96,7 +96,8 @@
   function visa(projekt) {
     $("antal").textContent = projekt.length + " projekt";
     $("lista").innerHTML = projekt.map(function (p) {
-      return '<li><a href="/' + esc(p.sida) + '"><div class="meta"><span>' + esc(p.kategori) + '</span><span>' + esc(p.datum) + '</span></div>' +
+      var ext = /^https:\/\//.test(p.sida);
+      return '<li><a href="' + (ext ? esc(p.sida) + '" target="_blank" rel="noopener' : '/' + esc(p.sida)) + '"><div class="meta"><span>' + esc(p.kategori) + '</span><span>' + esc(p.datum) + '</span></div>' +
         '<h2>' + esc(p.titel) + '</h2><p>' + esc(p.beskrivning) + '</p></a></li>';
     }).join("");
     $("inlogg").hidden = true; $("vy").hidden = false;
