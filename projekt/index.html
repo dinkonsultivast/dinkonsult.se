@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Projekt · Din Konsult i Väst AB</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Serif:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+  main { padding-block: 64px 96px; min-height: 70vh; }
+  .ruta { background: var(--papper); border: 1px solid var(--linje); padding: 40px; max-width: 440px; }
+  .ruta h1, .lista-topp h1 { font-family: var(--serif); font-weight: 500; font-size: 32px; line-height: 1.2; color: var(--marin); margin: 0 0 12px; }
+  .ruta p { color: var(--text-dov); margin: 0 0 28px; font-size: 16px; }
+  label.falt { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dov); margin-bottom: 8px; }
+  input[type=password] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--linje); background: var(--grund); color: var(--text); }
+  input[type=password]:focus { outline: 2px solid var(--vatten); outline-offset: 0; border-color: var(--vatten); }
+  .rad { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+  .kom { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--text-dov); }
+  button.knapp { font: inherit; font-size: 15px; background: var(--marin); color: #F2F5F8; border: 0; padding: 12px 22px; cursor: pointer; }
+  button.knapp:hover { background: var(--marin-djup); }
+  button.knapp[disabled] { opacity: .6; cursor: wait; }
+  .fel { color: #9B2C2C; font-size: 15px; margin: 12px 0 -12px; min-height: 1.4em; }
+  .lista-topp { display: flex; align-items: end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; }
+  .lista-topp p { margin: 0; color: var(--text-dov); }
+  button.lank { font: inherit; font-size: 15px; background: none; border: 0; color: var(--vatten); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
+  .projekt { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .projekt a { display: block; height: 100%; background: var(--papper); border: 1px solid var(--linje); padding: 24px; text-decoration: none; color: var(--text); transition: border-color .15s; }
+  .projekt a:hover { border-color: var(--vatten); }
+  .projekt .meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sand); display: flex; justify-content: space-between; gap: 12px; }
+  .projekt h2 { font-family: var(--serif); font-weight: 500; font-size: 22px; color: var(--marin); margin: 10px 0 8px; }
+  .projekt p { margin: 0; font-size: 15px; color: var(--text-dov); line-height: 1.55; }
+  [hidden] { display: none !important; }
+</style>
+<script src="/projekt/las.js"></script>
+</head>
+<body>
+
+<header class="topp">
+  <div class="wrap">
+    <a class="marke" href="/" aria-label="Din Konsult i Väst AB, startsida">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="0" y="0" width="40" height="40" fill="#14304A"/>
+        <rect x="6" y="13" width="28" height="4" fill="#F2F5F8"/>
+        <rect x="10" y="17" width="3" height="11" fill="#F2F5F8"/>
+        <rect x="18.5" y="17" width="3" height="11" fill="#F2F5F8"/>
+        <rect x="27" y="17" width="3" height="11" fill="#F2F5F8"/>
+        <path d="M6 31c3 0 3-2 6-2s3 2 6 2 3-2 6-2 3 2 6 2 3-2 4-2" fill="none" stroke="#4A7A9B" stroke-width="2"/>
+      </svg>
+      <span><b>Din Konsult i Väst</b><small>Beställarstöd i anläggning</small></span>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <form class="ruta" id="inlogg" hidden>
+      <h1>Projekt</h1>
+      <p>Arbetsmaterial och prototyper. Ange lösenordet för att fortsätta.</p>
+      <label class="falt" for="losen">Lösenord</label>
+      <input type="password" id="losen" autocomplete="current-password" required autofocus>
+      <div class="rad">
+        <label class="kom"><input type="checkbox" id="kom"> Kom ihåg den här enheten</label>
+        <button class="knapp" id="knapp" type="submit">Logga in</button>
+      </div>
+      <p class="fel" id="fel" role="alert"></p>
+    </form>
+
+    <div id="vy" hidden>
+      <div class="lista-topp">
+        <div>
+          <h1>Projekt</h1>
+          <p id="antal"></p>
+        </div>
+        <button class="lank" id="ut" type="button">Logga ut</button>
+      </div>
+      <ul class="projekt" id="lista"></ul>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  var LISTA = "HqOI2AhMcuIJj8zA2nvtg20AOsgoKqSxyuypy5MGtYRPMu9OZHoAsehfU5sJbm+6gh1wJfLAW+JFOkIgk/SgeAD7hYnp/7zMyedxcCVbkPbxrvWJKUoesoC6M4TZuzj1X/S8pCy1M83vuREDcWTwcLpAUP5kWnTsJ8KPJnHQSh+PkKkVB2nE7wFq2hFFyREsBR3tLb9bYGxmVx6m2o69h1W5rR6cPhL2Tf+fuADda9G0Fg8M+fErBoK18nCo8Uykp79Ei9T6XsJVxEPdvdA36S+TMV46XDDCB6oowRKLkiwSJuhtmo46eajOk399LXszgY1h2t4E9PiTaPYdnUpy0bFRuJoL+hZnPhQMXmTMZfqU1cGW/CS5Rk+y/a+SoWiNNRgxixYBLlS2u+kh2AX8fo7JSrG+Sl6RfMy1uYVRab4dC7rkBT7BjlMqBHv9qLcgjf1L0PGA8hs4oXIvVHkjliqbsCam5312FILJkWrwDerLPlxe4+lwdZwvDU5vDDoOZUuq9ZVzLj+FT1xweMfGRA12e7FD2jevKz3Ns6APGechoHhi9ep4MmKoJbkZGbH5c3g7fOwkeZlmaohKXcbYt8Z9kzZBfWM4GN6p/n2HhUH5sYZjyi0h8RB5PouB6cc/gjYmRpxU8N7WLfLwa8ozJnponyaWBaPapiGHoFkLpaF6hYuNi/fFm+2y2YtxYeyPObXBrsAYBwmTCahtwq3VowA1uSqfEdefSWqdALg+33inA4cvouZR7ad3shqll5XCbBIG/PJz++9u4KoQQMaBfLN1DgCK1Fbjy2l+oZbbdZWx1Ec=";
+  var $ = function (id) { return document.getElementById(id); };
+  var till = new URLSearchParams(location.search).get("till");
+  if (till && !/^\/[^/\\]/.test(till)) till = null;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function visa(projekt) {
+    $("antal").textContent = projekt.length + " projekt";
+    $("lista").innerHTML = projekt.map(function (p) {
+      return '<li><a href="/' + esc(p.sida) + '"><div class="meta"><span>' + esc(p.kategori) + '</span><span>' + esc(p.datum) + '</span></div>' +
+        '<h2>' + esc(p.titel) + '</h2><p>' + esc(p.beskrivning) + '</p></a></li>';
+    }).join("");
+    $("inlogg").hidden = true; $("vy").hidden = false;
+  }
+
+  async function prova(nyckel) {
+    return JSON.parse(await Las.dekryptera(nyckel, LISTA));
+  }
+
+  (async function start() {
+    try {
+      var n = await Las.sparadNyckel();
+      if (n) {
+        var p = await prova(n);
+        if (till) return location.replace(till);
+        return visa(p);
+      }
+    } catch (e) { Las.glom(); }
+    $("inlogg").hidden = false; $("losen").focus();
+  })();
+
+  $("inlogg").addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    $("knapp").disabled = true; $("fel").textContent = "";
+    try {
+      var n = await Las.harled($("losen").value);
+      var p = await prova(n);
+      await Las.spara(n, $("kom").checked);
+      $("losen").value = "";
+      if (till) return location.replace(till);
+      visa(p);
+    } catch (e) {
+      $("fel").textContent = "Fel lösenord.";
+      $("losen").select();
+    } finally { $("knapp").disabled = false; }
+  });
+
+  $("ut").addEventListener("click", function () {
+    Las.glom(); $("vy").hidden = true; $("inlogg").hidden = false; $("losen").focus();
+  });
+})();
+</script>
+</body>
+</html>
